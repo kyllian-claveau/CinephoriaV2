@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\Reparation;
 use App\Entity\Reservation;
+use App\Entity\Room;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -63,6 +65,77 @@ class APIController extends AbstractController
         return new JsonResponse([
             'message' => 'Erreur lors de la connexion',
         ], JsonResponse::HTTP_BAD_REQUEST);
+    }
+    #[Route('/api/repair', name: 'api_create_repair', methods: ['POST'])]
+    public function createRepair(Request $request): JsonResponse
+    {
+        // Vérification du token
+        $content = json_decode($request->getContent(), true);
+        $token = $content['token'] ?? null;
+
+        if (!$token) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+
+        try {
+            $decodedToken = $this->encoderInterface->decode($token);
+        } catch (\Exception $e) {
+            return new JsonResponse(['message' => 'Invalid token.'], 401);
+        }
+
+        if (!$decodedToken) {
+            return new JsonResponse(['message' => 'Invalid token.'], 401);
+        }
+
+        $userId = $decodedToken['id'];
+
+        $user = $this->entityManager->getRepository(User::class)->find($userId);
+
+        if (!$user) {
+            return new JsonResponse(['message' => 'Invalid credentials.'], 401);
+        }
+
+        $roomId = $content['room_id'] ?? null;
+        if (!$roomId) {
+            return new JsonResponse(['message' => 'Room ID is required.'], 400);
+        }
+
+        $room = $this->entityManager->getRepository(Room::class)->find($roomId);
+
+        if (!$room) {
+            return new JsonResponse(['message' => 'Room not found.'], 404);
+        }
+
+        // Récupérer les données de la réparation
+        $description = $content['description'] ?? null;
+        $statut = $content['statut'] ?? null;
+
+        if (!$description || !$statut) {
+            return new JsonResponse(['message' => 'Missing required fields.'], 400);
+        }
+
+        // Créer la nouvelle réparation
+        $reparation = new Reparation();
+        $reparation->setRoom($room);
+        $reparation->setDescription($description);
+        $reparation->setStatut($statut);
+
+        // Enregistrer la réparation dans la base de données
+        $this->entityManager->persist($reparation);
+        $this->entityManager->flush();
+
+        // Retourner une réponse avec les informations de la réparation créée
+        return new JsonResponse([
+            'message' => 'Repair created successfully.',
+            'repair' => [
+                'id' => $reparation->getId(),
+                'room_id' => $room->getId(),
+                'description' => $reparation->getDescription(),
+                'statut' => $reparation->getStatut(),
+                'date_creation' => $reparation->getDateCreation()->format('Y-m-d H:i:s'),
+                'date_reparation' => $reparation->getDateReparation() ? $reparation->getDateReparation()->format('Y-m-d H:i:s') : null,
+            ]
+        ], 201);
     }
 
     #[Route('/api/user/{id}/reservations', name: 'api_user_reservation_list', methods: ['POST'])]

@@ -41,6 +41,9 @@ class Room
     #[ORM\Column(type: 'integer')]
     private $rowsRoom;
 
+    #[ORM\OneToMany(mappedBy: 'room', targetEntity: Reparation::class)]
+    private $reparations;
+
     #[ORM\Column(type: 'integer')]
     private $columnsRoom;
 
@@ -88,6 +91,18 @@ class Room
     public function setRowsRoom(int $rowsRoom): self
     {
         $this->rowsRoom = $rowsRoom;
+
+        return $this;
+    }
+
+    public function getReparations(): ?Reparation
+    {
+        return $this->reparations;
+    }
+
+    public function setReparations(Reparation $reparations): self
+    {
+        $this->reparations = $reparations;
 
         return $this;
     }
