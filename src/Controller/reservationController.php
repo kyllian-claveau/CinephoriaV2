@@ -10,12 +10,17 @@ use App\Service\FilmStatsService;
 use Doctrine\ORM\EntityManagerInterface;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\Label\Font\OpenSans;
+use Endroid\QrCode\Label\LabelAlignment;
+use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class reservationController extends AbstractController
 {
@@ -64,17 +69,53 @@ class reservationController extends AbstractController
         ]);
     }
 
+    #[Route('/reservation/view/{id}', name: 'app_view_reservation', methods: ['GET'])]
+    public function viewReservation(
+        Reservation $reservation,
+        Request $request
+    ): Response {
+        // Vérifier si la requête demande du JSON
+        if ($request->getPreferredFormat() === 'json') {
+            return new JsonResponse([
+                'film' => $reservation->getSession()->getFilm()->getTitle(),
+                'date' => $reservation->getSession()->getStartDate()->format('d/m/Y H:i'),
+                'salle' => $reservation->getSession()->getRoom()->getNumber(),
+                'places' => $reservation->getSeats(),
+                'total' => $reservation->getTotalPrice(),
+                'client' => [
+                    'prenom' => $reservation->getUser()->getFirstname(),
+                    'nom' => $reservation->getUser()->getLastname()
+                ],
+                'reservation_id' => $reservation->getId()
+            ]);
+        }
+
+        // Si on veut une page HTML, rediriger vers la vue appropriée
+        return $this->render('view.html.twig', [
+            'reservation' => $reservation
+        ]);
+    }
+
     #[Route('/reservation/confirm', name: 'app_confirm_reservation', methods: ['POST'])]
     public function confirmReservation(
         Request $request,
+        UrlGeneratorInterface $urlGenerator,
         EntityManagerInterface $em,
         SessionRepository $sessionRepository,
         FilmStatsService $statsService
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 
-        // Récupérer la session et la salle
+        // Vérifier les données reçues
+        if (!isset($data['sessionId'], $data['seats']) || !is_array($data['seats'])) {
+            return new JsonResponse(['error' => 'Données invalides.'], 400);
+        }
+
+        // Récupérer la session
         $session = $sessionRepository->find($data['sessionId']);
+        if (!$session) {
+            return new JsonResponse(['error' => 'Session non trouvée.'], 404);
+        }
 
         // Vérifier si les sièges sont disponibles
         $reservedSeats = $session->getReservedSeats();
@@ -85,13 +126,14 @@ class reservationController extends AbstractController
             return new JsonResponse(['error' => 'Certaines places sont déjà réservées.'], 400);
         }
 
+        // Vérifier si l'utilisateur est connecté
         $user = $this->getUser();
-
         if (!$user) {
             return new JsonResponse(['error' => 'Utilisateur non trouvé.'], 404);
         }
 
-        $pricePerSeat = $session->getPrice(); // Prix d'une place pour cette séance
+        // Calculer le prix total
+        $pricePerSeat = $session->getPrice();
         $totalPrice = $pricePerSeat * count($selectedSeats);
 
         // Créer la réservation
@@ -101,36 +143,57 @@ class reservationController extends AbstractController
         $reservation->setSeats($selectedSeats);
         $reservation->setTotalPrice($totalPrice);
 
-        // Sauvegarder la réservation
+        // Sauvegarder la réservation et les sièges réservés
         $em->persist($reservation);
-
-        // Mettre à jour la salle avec les sièges réservés
         $reservedSeats = array_merge($reservedSeats, $selectedSeats);
         $session->setReservedSeats($reservedSeats);
+
+        // Valider les changements pour générer l'ID de la réservation
         $em->flush();
 
-        $statsService->updateStatsForReservation($reservation);
+        // Générer l'URL de la réservation
+        $reservationUrl = $urlGenerator->generate('app_view_reservation', [
+            'id' => $reservation->getId(),
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $qrCodeResult = Builder::create()
-            ->writer(new PngWriter())
-            ->data("Nom: {$user->getFirstname()}, Prénom: {$user->getLastname()}")
-            ->encoding(new Encoding('UTF-8'))
-            ->errorCorrectionLevel(ErrorCorrectionLevel::LOW)
-            ->size(300)
-            ->margin(10)
-            ->build();
+        // Générer le QR Code
+        $builder = new Builder(
+            writer: new PngWriter(),
+            writerOptions: [],
+            validateResult: false,
+            data: $reservationUrl,  // On utilise l'URL ici
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::High,
+            size: 300,
+            margin: 10,
+            roundBlockSizeMode: RoundBlockSizeMode::Margin,
+            labelText: $session->getFilm()->getTitle(),
+            labelFont: new OpenSans(20),
+            labelAlignment: LabelAlignment::Center
+        );
+
+        $result = $builder->build();
 
         // Créer un identifiant unique pour le fichier
         $uniqueId = uniqid('qrcode_', true);
         $qrCodeFilePath = $this->getParameter('kernel.project_dir') . '/public/images/qrcode/' . $uniqueId . '.png';
 
-        // Sauvegarder le QR Code dans le dossier /public/images/qrcode
-        $qrCodeResult->saveToFile($qrCodeFilePath);
+        // Sauvegarder le QR Code
+        $result->saveToFile($qrCodeFilePath);
 
-        // Retourner la réservation et l'URL du QR Code
+        // Définir l'URL du QR Code dans la réservation
+        $qrCodeUrl = '/images/qrcode/' . $uniqueId . '.png';
+        $reservation->setQrCodeUrl($qrCodeUrl);
+
+        // Mettre à jour la réservation avec le QR Code
+        $em->flush();
+
+        // Mettre à jour les statistiques
+        $statsService->updateStatsForReservation($reservation);
+
         return new JsonResponse([
             'message' => 'Réservation confirmée.',
-            'qrcode_url' => '/images/qrcode/' . $uniqueId . '.png'
+            'qrcode_url' => $qrCodeUrl,
         ]);
     }
 

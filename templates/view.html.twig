@@ -1,0 +1,32 @@
+{# templates/reservation/view.html.twig #}
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Détails de la réservation{% endblock %}
+
+{% block content %}
+    <div class="container mx-auto p-4 mt-24">
+        <div class="bg-white shadow-lg rounded-lg p-6 max-w-lg mx-auto">
+            <h1 class="text-2xl text-black font-bold mb-4">Réservation Cinéma</h1>
+
+            <div class="space-y-4">
+                <div>
+                    <h2 class="text-xl text-black font-semibold">{{ reservation.session.film.title }}</h2>
+                    <p class="text-gray-600">
+                        Le {{ reservation.session.startDate|date('d/m/Y à H:i') }}
+                    </p>
+                </div>
+
+                <div class="border-t text-black pt-4">
+                    <p><strong>Salle :</strong> {{ reservation.session.room.number }}</p>
+                    <p><strong>Places :</strong> {{ reservation.seats|join(', ') }}</p>
+                    <p><strong>Total :</strong> {{ reservation.totalPrice|number_format(2, ',', ' ') }} €</p>
+                </div>
+
+                <div class="border-t text-black pt-4">
+                    <p><strong>Client :</strong> {{ reservation.user.firstname }} {{ reservation.user.lastname }}</p>
+                    <p><strong>N° de réservation :</strong> {{ reservation.id }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

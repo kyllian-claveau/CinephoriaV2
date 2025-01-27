@@ -27,6 +27,9 @@ class Reservation
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     private ?float $totalPrice = null;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $qrCodeUrl = null;
+
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
@@ -47,6 +50,18 @@ class Reservation
     public function setSession(?Session $session): self
     {
         $this->session = $session;
+        return $this;
+    }
+
+    public function getQrCodeUrl(): ?string
+    {
+        return $this->qrCodeUrl;
+    }
+
+    public function setQrCodeUrl(?string $qrCodeUrl): self
+    {
+        $this->qrCodeUrl = $qrCodeUrl;
+
         return $this;
     }
 
