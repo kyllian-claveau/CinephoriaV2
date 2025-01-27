@@ -17,7 +17,6 @@ class FilmStatsService
     {
     }
 
-
     public function updateStatsForReservation($reservation): void
     {
         try {
@@ -33,13 +32,11 @@ class FilmStatsService
                 'date' => $today->format('Y-m-d')
             ]);
 
-// Connexion à MongoDB
             $uri = $_ENV['MONGODB_DSN'];
             $apiVersion = new ServerApi(ServerApi::V1);
             $client = new Client($uri, [], ['serverApi' => $apiVersion]);
             $collection = $client->selectDatabase($_ENV['MONGODB_DB'])->selectCollection($_ENV['MONGODB_COLLECTION']);
 
-// Recherche ou création du document pour les statistiques
             $date = new UTCDateTime($today);
             $stats = $collection->findOne([
                 'filmId' => $film->getId(),

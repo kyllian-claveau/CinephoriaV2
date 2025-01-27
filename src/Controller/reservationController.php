@@ -8,6 +8,9 @@ use App\Entity\Session;
 use App\Repository\SessionRepository;
 use App\Service\FilmStatsService;
 use Doctrine\ORM\EntityManagerInterface;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\Writer\PngWriter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -108,7 +111,27 @@ class reservationController extends AbstractController
 
         $statsService->updateStatsForReservation($reservation);
 
-        return new JsonResponse(['message' => 'Réservation confirmée.']);
+        $qrCodeResult = Builder::create()
+            ->writer(new PngWriter())
+            ->data("Nom: {$user->getFirstname()}, Prénom: {$user->getLastname()}")
+            ->encoding(new Encoding('UTF-8'))
+            ->errorCorrectionLevel(ErrorCorrectionLevel::LOW)
+            ->size(300)
+            ->margin(10)
+            ->build();
+
+        // Créer un identifiant unique pour le fichier
+        $uniqueId = uniqid('qrcode_', true);
+        $qrCodeFilePath = $this->getParameter('kernel.project_dir') . '/public/images/qrcode/' . $uniqueId . '.png';
+
+        // Sauvegarder le QR Code dans le dossier /public/images/qrcode
+        $qrCodeResult->saveToFile($qrCodeFilePath);
+
+        // Retourner la réservation et l'URL du QR Code
+        return new JsonResponse([
+            'message' => 'Réservation confirmée.',
+            'qrcode_url' => '/images/qrcode/' . $uniqueId . '.png'
+        ]);
     }
 
     #[Route("/reservation/{sessionId}", name: "app_seats_reservation")]

@@ -15,6 +15,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.4",
         "doctrine/mongodb-odm-bundle": "^5.1",
         "doctrine/orm": "^3.3.1",
+        "endroid/qr-code": "^6.0",
         "lexik/jwt-authentication-bundle": "^3.1.1",
         "mongodb/mongodb": "^1.20",
         "nelmio/cors-bundle": "^2.5",
