@@ -111,7 +111,7 @@ class APIController extends AbstractController
                 'room' => $reservation->getSession()->getRoom()->getNumber(),
                 'cinema' => $reservation->getSession()->getCinema()->getName(),
                 'start_date' => $reservation->getSession()->getStartDate()->format('Y-m-d'),
-                'end_date' => $reservation->getSession()->getEndDate() ? $reservation->getEndDate()->format('Y-m-d') : null,
+                'end_date' => $reservation->getSession()->getEndDate()->format('Y-m-d')
             ];
         }
         return new JsonResponse($reservationData, 200);
