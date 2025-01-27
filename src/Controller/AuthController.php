@@ -103,8 +103,7 @@ class AuthController extends AbstractController
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface      $entityManager,
         MailerInterface             $mailer
-    ): Response
-    {
+    ): Response {
         $user = new User();
         $form = $this->createForm(RegisterType::class, $user);
         $form->handleRequest($request);
@@ -141,15 +140,18 @@ class AuthController extends AbstractController
 
             $mailer->send($email);
 
+            // Add success message
             $this->addFlash('success', 'Un e-mail de confirmation a été envoyé à votre adresse.');
 
-            return new JsonResponse(['message' => 'Veuillez activez votre compte']);
+            // Redirect to login page with query parameter
+            return $this->redirectToRoute('app_login', ['confirmation_sent' => true]);
         }
 
         return $this->render('auth/register.html.twig', [
             'form' => $form->createView()
         ]);
     }
+
 
     #[Route(path: '/reset-password', name: 'app_reset_password', methods: ['POST'])]
     public function resetPassword(Request $request, EntityManagerInterface $entityManager): JsonResponse
