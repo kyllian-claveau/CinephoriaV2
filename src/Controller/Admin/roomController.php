@@ -2,12 +2,11 @@
 
 namespace App\Controller\Admin;
 
-use App\Controller\APIController;
 use App\Entity\Room;
 use App\Form\RoomType;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,17 +15,53 @@ use Symfony\Component\Routing\Annotation\Route;
 class roomController extends AbstractController
 {
     #[Route('/room/create', name: 'app_admin_room_create')]
-    public function createRequest (Request $request, EntityManagerInterface $entityManager): Response
+    public function createRequest(Request $request, EntityManagerInterface $entityManager): Response
     {
         $room = new Room();
         $form = $this->createForm(RoomType::class, $room);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $stairsData = $form->get('stairs')->getData();
+            $accessibleSeatsData = $form->get('accessibleSeats')->getData();
+
+            // Gestion des escaliers
+            if ($stairsData) {
+                // S'assurer que les données sont sous forme de tableau
+                if (is_array($stairsData)) {
+                    $room->setStairs($stairsData);
+                } else {
+                    $form->get('stairs')->addError(new FormError('Les données des escaliers sont invalides.'));
+                }
+            }
+
+            // Gestion des sièges accessibles
+            if ($accessibleSeatsData) {
+                // Assurer que accessibleSeats est bien un tableau
+                if (is_string($accessibleSeatsData)) {
+                    $accessibleSeatsData = json_decode($accessibleSeatsData, true);
+                }
+                if (is_array($accessibleSeatsData)) {
+                    $room->setAccessibleSeats($accessibleSeatsData);
+                } else {
+                    $form->get('accessibleSeats')->addError(new FormError('Les données des sièges accessibles sont invalides.'));
+                }
+            }
+
+            // Calcul du nombre total de sièges
+            $rows = $room->getRowsRoom();
+            $columns = $room->getColumnsRoom();
+            $totalSeats = $rows * $columns;
+
+            // Soustraction des sièges occupés par les escaliers et les sièges accessibles
+            $totalSeats -= count($stairsData); // Soustraire le nombre d'escaliers
+            $totalSeats -= count($accessibleSeatsData); // Soustraire le nombre de sièges accessibles
+
+            $room->setTotalSeats($totalSeats);
+
+            // Sauvegarde de la salle
             $entityManager->persist($room);
             $entityManager->flush();
-
-            $this->addFlash('success', 'La salle a été créée avec succès.');
 
             return $this->redirectToRoute('app_admin_room');
         }
@@ -67,7 +102,7 @@ class roomController extends AbstractController
 
         return $this->render('admin/Room/edit.html.twig', [
             'form' => $form->createView(),
-            'room' => $room
+            'room' => $room,
         ]);
     }
 
