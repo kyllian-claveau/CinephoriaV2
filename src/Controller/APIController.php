@@ -14,22 +14,27 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 
 class APIController extends AbstractController
 {
     private $jwtManager;
+
+    private $encoderInterface;
     private $entityManager;
     private $security;
 
     public function __construct(
         JWTTokenManagerInterface $jwtManager,
         EntityManagerInterface $entityManager,
-        Security $security
+        Security $security,
+        JWTEncoderInterface $encoderInterface
     )
     {
         $this->entityManager = $entityManager;
         $this->security = $security;
         $this->jwtManager = $jwtManager;
+        $this->encoderInterface = $encoderInterface;
     }
 
     #[Route(path: '/api/login', name: 'api_login', methods: ['POST'])]
@@ -71,7 +76,7 @@ class APIController extends AbstractController
         }
 
         try {
-            $decodedToken = $this->jwtManager->decode($token);
+            $decodedToken = $this->encoderInterface->decode($token);
         } catch (\Exception $e) {
             return new JsonResponse(['message' => 'Invalid token.'], 401);
         }
