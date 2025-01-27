@@ -66,6 +66,32 @@ class APIController extends AbstractController
             'message' => 'Erreur lors de la connexion',
         ], JsonResponse::HTTP_BAD_REQUEST);
     }
+
+    #[Route('/api/rooms', name: 'api_get_rooms', methods: ['GET'])]
+    public function getRooms(): JsonResponse
+    {
+        // Récupérer toutes les salles
+        $rooms = $this->entityManager->getRepository(Room::class)->findAll();
+
+        // Si aucune salle n'est trouvée
+        if (!$rooms) {
+            return new JsonResponse(['message' => 'No rooms found.'], 404);
+        }
+
+        // Préparer les données des salles
+        $roomsData = [];
+        foreach ($rooms as $room) {
+            $roomsData[] = [
+                'id' => $room->getId(),
+                'number' => $room->getNumber(),
+                'quality' => $room->getQuality(),
+            ];
+        }
+
+        // Retourner la liste des salles
+        return new JsonResponse($roomsData, 200);
+    }
+
     #[Route('/api/repair', name: 'api_create_repair', methods: ['POST'])]
     public function createRepair(Request $request): JsonResponse
     {
