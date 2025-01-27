@@ -110,6 +110,7 @@ class APIController extends AbstractController
                 'film' => $reservation->getSession()->getFilm()->getTitle(),
                 'room' => $reservation->getSession()->getRoom()->getNumber(),
                 'cinema' => $reservation->getSession()->getCinema()->getName(),
+                'url' => $reservation->getQrCodeUrl(),
                 'start_date' => $reservation->getSession()->getStartDate()->format('Y-m-d'),
                 'end_date' => $reservation->getSession()->getEndDate()->format('Y-m-d')
             ];
