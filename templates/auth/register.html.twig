@@ -10,6 +10,11 @@
 
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
             <div class="bg-gray-800 py-8 px-6 shadow-lg rounded-lg sm:px-10">
+                {% for label, messages in app.flashes %}
+                    <div class="mt-4 bg-{{ label == 'success' ? 'green' : 'red' }}-500 text-white p-4 rounded-lg">
+                        {{ messages[0] }}
+                    </div>
+                {% endfor %}
                 {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
 
                 <div>

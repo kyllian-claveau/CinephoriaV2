@@ -109,48 +109,67 @@ class AuthController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $hashedPassword = $passwordHasher->hashPassword($user, $form->get('password')->getData());
-            $user->setPassword($hashedPassword);
-            $user->setRoles(['ROLE_USER']);
-            $user->setIsActive(false); // Account will remain inactive until confirmed
+            // Check if email already exists
+            $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
+            if ($existingUser) {
+                $this->addFlash('error', 'Cet email est déjà utilisé. Veuillez en choisir un autre.');
+                return $this->render('auth/register.html.twig', [
+                    'form' => $form->createView()
+                ]);
+            }
 
-            // Generate a confirmation token
-            $confirmationToken = bin2hex(random_bytes(32));
-            $user->setConfirmationToken($confirmationToken);
+            try {
+                $hashedPassword = $passwordHasher->hashPassword($user, $form->get('password')->getData());
+                $user->setPassword($hashedPassword);
+                $user->setRoles(['ROLE_USER']);
+                $user->setIsActive(false); // Account will remain inactive until confirmed
 
-            // Save the user
-            $entityManager->persist($user);
-            $entityManager->flush();
+                // Generate a confirmation token
+                $confirmationToken = bin2hex(random_bytes(32));
+                $user->setConfirmationToken($confirmationToken);
 
-            // Send confirmation email
-            $confirmationUrl = $this->generateUrl(
-                'app_confirm_account',
-                ['token' => $confirmationToken],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            );
+                // Save the user
+                $entityManager->persist($user);
+                $entityManager->flush();
 
-            $email = (new Email())
-                ->from('no-reply@votresite.com')
-                ->to($user->getEmail())
-                ->subject('Confirmez votre inscription')
-                ->html($this->renderView('emails/confirmation.html.twig', [
-                    'user' => $user,
-                    'confirmationUrl' => $confirmationUrl,
-                ]));
+                // Send confirmation email
+                $confirmationUrl = $this->generateUrl(
+                    'app_confirm_account',
+                    ['token' => $confirmationToken],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                );
 
-            $mailer->send($email);
+                $email = (new Email())
+                    ->from('no-reply@votresite.com')
+                    ->to($user->getEmail())
+                    ->subject('Confirmez votre inscription')
+                    ->html($this->renderView('emails/confirmation.html.twig', [
+                        'user' => $user,
+                        'confirmationUrl' => $confirmationUrl,
+                    ]));
 
-            // Add success message
-            $this->addFlash('success', 'Un e-mail de confirmation a été envoyé à votre adresse.');
+                $mailer->send($email);
 
-            // Redirect to login page with query parameter
-            return $this->redirectToRoute('app_login', ['confirmation_sent' => true]);
+                // Add success message
+                $this->addFlash('success', 'Un e-mail de confirmation a été envoyé à votre adresse.');
+
+                // Redirect to login page with query parameter
+                return $this->redirectToRoute('app_login', ['confirmation_sent' => true]);
+
+            } catch (\Exception $e) {
+                // If any exception occurs, display the error message
+                $this->addFlash('error', 'Une erreur est survenue. Veuillez réessayer plus tard.');
+                return $this->render('auth/register.html.twig', [
+                    'form' => $form->createView()
+                ]);
+            }
         }
 
         return $this->render('auth/register.html.twig', [
             'form' => $form->createView()
         ]);
     }
+
 
 
     #[Route(path: '/reset-password', name: 'app_reset_password', methods: ['POST'])]
