@@ -164,6 +164,39 @@ class APIController extends AbstractController
         ], 201);
     }
 
+    #[Route('/api/repairs', name: 'api_get_repairs', methods: ['GET'])]
+    public function getRepairs(): JsonResponse
+    {
+        // Récupérer toutes les réparations
+        $repairs = $this->entityManager->getRepository(Reparation::class)->findAll();
+
+        // Si aucune réparation n'est trouvée
+        if (!$repairs) {
+            return new JsonResponse(['message' => 'No repairs found.'], 404);
+        }
+
+        // Préparer les données des réparations
+        $repairsData = [];
+        foreach ($repairs as $repair) {
+            $repairsData[] = [
+                'id' => $repair->getId(),
+                'room' => [
+                    'id' => $repair->getRoom()->getId(),
+                    'number' => $repair->getRoom()->getNumber(),
+                    'quality' => $repair->getRoom()->getQuality(),
+                ],
+                'description' => $repair->getDescription(),
+                'statut' => $repair->getStatut(),
+                'date_creation' => $repair->getDateCreation()->format('Y-m-d H:i:s'),
+                'date_reparation' => $repair->getDateReparation() ? $repair->getDateReparation()->format('Y-m-d H:i:s') : null,
+            ];
+        }
+
+        // Retourner la liste des réparations
+        return new JsonResponse($repairsData, 200);
+    }
+
+
     #[Route('/api/user/{id}/reservations', name: 'api_user_reservation_list', methods: ['POST'])]
     public function list(int $id, Request $request, UserRepository $userRepository): JsonResponse
     {
