@@ -37,7 +37,8 @@ class Film
     private ?UploadedFile $filmFile = null;
 
     #[ORM\ManyToMany(targetEntity: Cinema::class, inversedBy: 'films')]
-    private $cinemas;
+    #[ORM\JoinTable(name: 'film_cinema')]
+    private Collection $cinemas;
 
     #[ORM\ManyToMany(targetEntity: Genre::class, inversedBy: 'films')]
     private $genres;
@@ -225,6 +226,28 @@ class Film
     public function getCinemasAsString(): string
     {
         return implode(', ', $this->cinemas->map(fn($cinema) => $cinema->getName())->toArray());
+    }
+
+    public function addCinema(Cinema $cinema): self
+    {
+        if (!$this->cinemas->contains($cinema)) {
+            $this->cinemas->add($cinema);
+        }
+        return $this;
+    }
+
+    public function removeCinema(Cinema $cinema): self
+    {
+        $this->cinemas->removeElement($cinema);
+        return $this;
+    }
+
+    public function addGenre(Genre $genre): self
+    {
+        if (!$this->genres->contains($genre)) {
+            $this->genres->add($genre);
+        }
+        return $this;
     }
 
 }

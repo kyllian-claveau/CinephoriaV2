@@ -23,8 +23,8 @@ class Cinema
     #[ORM\Column(length: 255)]
     private ?string $location = null;
 
-    #[ORM\ManyToMany(targetEntity: Film::class, mappedBy: "cinemas")]
-    private $films;
+    #[ORM\ManyToMany(targetEntity: Film::class, mappedBy: 'cinemas')]
+    private Collection $films;
 
     public function __construct()
     {
@@ -67,6 +67,23 @@ class Cinema
     {
         $this->films = $films;
 
+        return $this;
+    }
+
+    public function addFilm(Film $film): self
+    {
+        if (!$this->films->contains($film)) {
+            $this->films->add($film);
+            $film->addCinema($this);
+        }
+        return $this;
+    }
+
+    public function removeFilm(Film $film): self
+    {
+        if ($this->films->removeElement($film)) {
+            $film->removeCinema($this);
+        }
         return $this;
     }
 }
