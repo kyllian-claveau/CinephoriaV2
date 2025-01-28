@@ -1,4 +1,7 @@
 security:
+    role_hierarchy:
+        ROLE_ADMIN: [ ROLE_USER, ROLE_EMPLOYEE ]
+        ROLE_EMPLOYEE: [ ROLE_USER ]
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
@@ -24,7 +27,6 @@ security:
         main:
             pattern: ^/
             provider: app_user_provider
-            # Stateful pour utiliser les sessions
             stateless: false
             form_login:
                 login_path: app_login
@@ -44,3 +46,6 @@ security:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/doc, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: PUBLIC_ACCESS }
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/user, roles: ROLE_USER }
+        - { path: ^/employee, roles: ROLE_EMPLOYEE }

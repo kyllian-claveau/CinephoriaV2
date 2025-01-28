@@ -139,6 +139,7 @@ class reservationController extends AbstractController
         // Créer la réservation
         $reservation = new Reservation();
         $reservation->setSession($session);
+        $reservation->setCreatedAt(new \DateTime());
         $reservation->setUser($user);
         $reservation->setSeats($selectedSeats);
         $reservation->setTotalPrice($totalPrice);

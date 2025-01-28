@@ -17,6 +17,25 @@ class SessionRepository extends ServiceEntityRepository
         parent::__construct($registry, Session::class);
     }
 
+    public function countUpcomingSessions(): int
+    {
+        return $this->createQueryBuilder('s')
+            ->select('COUNT(s.id)')
+            ->andWhere('s.startDate >= :now')
+            ->setParameter('now', new \DateTime())
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function findNextSessions(int $limit = 5): array
+    {
+        return $this->createQueryBuilder('s')
+            ->orderBy('s.startDate', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function findByFilm(Film $film): array
     {
         return $this->createQueryBuilder('s')

@@ -16,7 +16,7 @@
 </head>
 <body class="bg-white text-black antialiased">
 <!-- Header -->
-<header class="fixed w-full flex items-center justify-between h-14 bg-indigo-600 text-white z-10">
+<header class="fixed w-full flex items-center justify-between h-14 bg-gray-900 text-white z-10">
     <div class="flex items-center justify-start pl-3 w-14 md:w-64 h-14">
         <button id="menu-button" class="md:hidden">☰</button>
         <span class="hidden md:block">Bienvenue {{ app.user.firstname }} {{ app.user.lastname }} !</span>
@@ -43,11 +43,11 @@
     </div>
 </header>
 
-<aside id="sidebar" class="fixed top-14 left-0 w-64 bg-indigo-600 text-white h-full transition-transform transform -translate-x-full md:translate-x-0 z-10">
+<aside id="sidebar" class="fixed top-14 left-0 w-64 bg-gray-900 text-white h-full transition-transform transform -translate-x-full md:translate-x-0 z-10">
     <ul class="space-y-2 p-4">
-        <li><a href="{{ path('app_user_dashboard') }}" class="flex items-center p-2 hover:bg-blue-800"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Accueil</a></li>
-        <li><a href="{{ path('app_user_orders') }}" class="flex items-center p-2 hover:bg-blue-800"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Mes commandes</a></li>
-        <li><a href="{{ path('app_user_reviews') }}" class="flex items-center p-2 hover:bg-blue-800"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Mes notes</a></li>
+        <li><a href="{{ path('app_user_dashboard') }}" class="flex items-center p-2 hover:bg-gray-700"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Accueil</a></li>
+        <li><a href="{{ path('app_user_orders') }}" class="flex items-center p-2 hover:bg-gray-700"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Mes commandes</a></li>
+        <li><a href="{{ path('app_user_reviews') }}" class="flex items-center p-2 hover:bg-gray-700"><svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Mes notes</a></li>
     </ul>
 </aside>
 <!-- Main content -->

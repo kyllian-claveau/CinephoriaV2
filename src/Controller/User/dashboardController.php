@@ -3,6 +3,7 @@
 namespace App\Controller\User;
 
 use App\Controller\APIController;
+use App\Entity\Film;
 use App\Entity\Reservation;
 use App\Entity\Review;
 use App\Entity\Session;
@@ -18,9 +19,31 @@ use Symfony\Component\Routing\Attribute\Route;
 class dashboardController extends AbstractController
 {
     #[Route(path: '/dashboard', name: 'app_user_dashboard', methods: ["GET"])]
-    public function index(): Response
+    public function index(EntityManagerInterface $entityManager): Response
     {
-        return $this->render('user/dashboard.html.twig');
+        $user = $this->getUser();
+        $reservations = $entityManager->getRepository(Reservation::class)
+            ->findBy(['user' => $user], ['createdAt' => 'DESC'], 2);
+
+        $films = $entityManager->getRepository(Film::class)
+            ->findBy([], ['createdAt' => 'DESC'], 2);
+
+        $allReservations = $entityManager->getRepository(Reservation::class)
+            ->findBy(['user' => $user]);
+
+        $watchedFilms = [];
+        foreach ($allReservations as $reservation) {
+            $film = $reservation->getSession()->getFilm();
+            $watchedFilms[$film->getId()] = $film;
+        }
+        $distinctFilmsCount = count($watchedFilms);
+
+        return $this->render('user/dashboard.html.twig', [
+            'reservations' => $reservations,
+            'films' => $films,
+            'totalReservations' => count($allReservations),
+            'distinctFilmsCount' => $distinctFilmsCount,
+        ]);
     }
 
     #[Route(path: '/orders', name: 'app_user_orders', methods: ["GET"])]

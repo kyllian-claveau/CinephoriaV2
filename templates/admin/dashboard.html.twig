@@ -11,40 +11,6 @@
             </div>
         </div>
 
-        <div class="mt-8 flow-root">
-            <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-                        <table class="min-w-full divide-y divide-primary">
-                            <thead class="bg-indigo-600 text-white">
-                            <tr>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold">Film</th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold">Billet vendu</th>
-                                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold">Montant total</th>
-                            </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 bg-white">
-                            {% for film, stats in stats['stats'] %}
-                                <tr>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ film }}</td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ stats['count'] }}</td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ stats['revenue'] | number_format(2, '.', ',') }} €</td>
-                                </tr>
-                            {% else %}
-                                <tr>
-                                    <td class="whitespace-nowrap py-4 text-sm font-medium text-center" colspan="6">
-                                        Aucun graphique disponible
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Graphique -->
         <div class="mt-8">
             <h2 class="text-lg font-medium text-gray-700">Graphique des réservations et revenus</h2>
             <canvas id="filmStatsChart" width="400" height="200"></canvas>

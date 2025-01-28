@@ -37,10 +37,26 @@ class Reservation
     #[ORM\OneToMany(targetEntity: 'App\Entity\Review', mappedBy: "reservation")]
     private $reviews;
 
+    #[ORM\Column(type: 'datetime')]
+    #[Assert\NotNull]
+    private \DateTimeInterface $createdAt;
+
     public function getId(): ?int
     {
         return $this->id;
     }
+
+    public function getCreatedAt(): \DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
 
     public function getSession(): ?Session
     {
@@ -73,6 +89,7 @@ class Reservation
     public function getReviews(): Collection
     {
         return $this->reviews;
+        $this->createdAt = new \DateTime();
     }
 
     // Méthode pour ajouter un avis à la réservation
