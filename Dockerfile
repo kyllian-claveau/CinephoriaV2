@@ -6,8 +6,9 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     git unzip libzip-dev zip curl \
     libmariadb-dev \
-    libssl3 libcurl4-openssl-dev pkg-config && \
-    docker-php-ext-install pdo pdo_mysql zip
+    libssl3 libcurl4-openssl-dev pkg-config \
+    libxml2-dev && \   # Ajouter l'extension XML
+    docker-php-ext-install pdo pdo_mysql zip xml  # Installer l'extension XML
 
 # Installer l'extension MongoDB via PECL
 RUN pecl install mongodb \
@@ -39,7 +40,8 @@ WORKDIR /var/www/html
 RUN apt-get update && apt-get install -y \
     libmariadb-dev \
     libssl3 \
-    && docker-php-ext-install pdo pdo_mysql
+    libxml2-dev && \  # Ajouter l'extension XML
+    docker-php-ext-install pdo pdo_mysql xml  # Installer l'extension XML
 
 # Installer l'extension MongoDB
 RUN apt-get update && apt-get install -y libssl3 libcurl4-openssl-dev pkg-config && pecl install mongodb \
