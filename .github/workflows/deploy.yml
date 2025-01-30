@@ -19,8 +19,8 @@ jobs:
 
       - name: Copy files to VPS
         run: |
-          ssh -o StrictHostKeyChecking=no debian@5.196.21.36 "mkdir -p /var/www/cinephoria"
-          rsync -avz --exclude='.git' ./ debian@5.196.21.36:/var/www/cinephoria/
+          ssh -o StrictHostKeyChecking=no debian@5.196.21.36 "sudo mkdir -p /var/www/cinephoria"
+          ssh -o StrictHostKeyChecking=no debian@5.196.21.36 "sudo chown -R debian:debian /var/www/cinephoria"
 
       - name: Deploy with Docker Compose
         run: |
