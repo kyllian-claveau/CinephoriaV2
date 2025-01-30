@@ -20,19 +20,16 @@ jobs:
 
       - name: Install Docker and Docker Compose on VPS
         run: |
-          ssh -o StrictHostKeyChecking=no debian@5.196.21.36 << 'EOF'
-            sudo apt-get update
-            sudo apt-get install -y docker.io docker-compose git
-          EOF
+          ssh -o StrictHostKeyChecking=no debian@5.196.21.36 "sudo apt-get update && sudo apt-get install -y docker.io docker-compose git"
 
       - name: Clone repository on VPS
         run: |
-          ssh -o StrictHostKeyChecking=no debian@5.196.21.36 << 'EOF'
-            if [ ! -d "/var/www/cinephoria" ]; then
-              sudo mkdir -p /var/www/cinephoria
-              git clone https://github.com/kyllian-claveau/CinephoriaV2.git /var/www/cinephoria
+          ssh -o StrictHostKeyChecking=no debian@5.196.21.36 "
+            if [ ! -d \"/var/www/cinephoria\" ]; then 
+              sudo mkdir -p /var/www/cinephoria && 
+              git clone https://github.com/kyllian-claveau/CinephoriaV2.git /var/www/cinephoria; 
             fi
-          EOF
+          "
 
       - name: Deploy with Docker Compose
         run: |
