@@ -26,7 +26,11 @@ RUN git clone https://github.com/kyllian-claveau/CinephoriaV2.git /app
 
 # Copier le fichier .env directement dans /app
 COPY .env /app/.env
+COPY composer.json /app/
+COPY composer.lock /app/
 RUN chmod 644 /app/.env
+RUN chown -R www-data:www-data /var/www/cinephoria/vendor
+
 
 # Installer les dépendances PHP via Composer
 WORKDIR /app
@@ -34,7 +38,7 @@ RUN composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-mo
 
 # Étape 2 : Image de production
 FROM php:8.3-apache
-WORKDIR /var/www/html
+WORKDIR /var/www/cinephoria
 
 # Installer les extensions MySQL
 RUN apt-get update && apt-get install -y \
@@ -49,10 +53,10 @@ RUN apt-get update && apt-get install -y libssl3 libcurl4-openssl-dev pkg-config
 
 # Configuration Apache
 RUN a2enmod rewrite
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+RUN sed -i 's|/var/www/cinephoria|/var/www/cinephoria/public|g' /etc/apache2/sites-available/000-default.conf
 
 # Copier l'application
-COPY --from=builder /app /var/www/html
+COPY --from=builder /app /var/www/cinephoria
 
 # Configuration .htaccess
 RUN echo '<IfModule mod_rewrite.c>\n\
@@ -60,11 +64,11 @@ RUN echo '<IfModule mod_rewrite.c>\n\
     RewriteEngine On\n\
     RewriteCond %{REQUEST_FILENAME} !-f\n\
     RewriteRule ^ index.php [QSA,L]\n\
-</IfModule>' > /var/www/html/public/.htaccess
+</IfModule>' > /var/www/cinephoria/public/.htaccess
 
 # Permissions
-RUN chmod -R 775 /var/www/html /var/www/html/var /var/www/html/public \
-    && chown -R www-data:www-data /var/www/html
+RUN chmod -R 775 /var/www/cinephoria /var/www/cinephoria/var /var/www/cinephoria/public \
+    && chown -R www-data:www-data /var/www/cinephoria
 
 EXPOSE 80
 CMD ["apache2-foreground"]

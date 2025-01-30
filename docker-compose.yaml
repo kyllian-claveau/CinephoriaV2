@@ -40,7 +40,7 @@ services:
       APP_ENV: prod
       DATABASE_URL: "mysql://${DATABASE_USER:-cinephoria}:${DATABASE_PASSWORD:-cinephoriapassword}@database:3306/${DATABASE_NAME:-cinephoriaproject}"
     volumes:
-      - .:/var/www/html
+      - .:/var/www/cinephoria
     networks:
       - symfony_net
     ports:
