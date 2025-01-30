@@ -28,19 +28,19 @@ jobs:
 
       - name: Create .env file on the VPS with secrets
         run: |
-          ssh debian@5.196.21.36 "echo 'APP_ENV=prod' | sudo tee /var/www/cinephoria/.env > /dev/null && \
-                                  echo 'APP_SECRET=${{ secrets.APP_SECRET }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null && \
-                                  echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null && \
-                                  echo 'MESSENGER_TRANSPORT_DSN=${{ secrets.MESSENGER_TRANSPORT_DSN }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null && \
-                                  echo 'MAILER_DSN=${{ secrets.MAILER_DSN }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null && \
-                                  echo 'CORS_ALLOW_ORIGIN=${{ secrets.CORS_ALLOW_ORIGIN }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null && \
-                                  echo 'JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null && \
-                                  echo 'JWT_PUBLIC_KEY=${{ secrets.JWT_PUBLIC_KEY }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null && \
-                                  echo 'JWT_PASSPHRASE=${{ secrets.JWT_PASSPHRASE }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null && \
-                                  echo 'MONGODB_DSN=${{ secrets.MONGODB_DSN }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null && \
-                                  echo 'MONGODB_DB=${{ secrets.MONGODB_DB }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null && \
-                                  echo 'MONGODB_COLLECTION=${{ secrets.MONGODB_COLLECTION }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null"
-          
+          ssh debian@5.196.21.36 "echo 'APP_ENV=prod' | sudo tee /var/www/cinephoria/.env > /dev/null"
+          ssh debian@5.196.21.36 "echo 'APP_SECRET=${{ secrets.APP_SECRET }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null"
+          ssh debian@5.196.21.36 "echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null"
+          ssh debian@5.196.21.36 "echo 'MESSENGER_TRANSPORT_DSN=${{ secrets.MESSENGER_TRANSPORT_DSN }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null"
+          ssh debian@5.196.21.36 "echo 'MAILER_DSN=${{ secrets.MAILER_DSN }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null"
+          ssh debian@5.196.21.36 "echo 'CORS_ALLOW_ORIGIN=${{ secrets.CORS_ALLOW_ORIGIN }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null"
+          ssh debian@5.196.21.36 "echo 'JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null"
+          ssh debian@5.196.21.36 "echo 'JWT_PUBLIC_KEY=${{ secrets.JWT_PUBLIC_KEY }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null"
+          ssh debian@5.196.21.36 "echo 'JWT_PASSPHRASE=${{ secrets.JWT_PASSPHRASE }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null"
+          ssh debian@5.196.21.36 "echo 'MONGODB_DSN=${{ secrets.MONGODB_DSN }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null"
+          ssh debian@5.196.21.36 "echo 'MONGODB_DB=${{ secrets.MONGODB_DB }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null"
+          ssh debian@5.196.21.36 "echo 'MONGODB_COLLECTION=${{ secrets.MONGODB_COLLECTION }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null"
+      
 
       - name: Deploy with Docker Compose
         run: |
