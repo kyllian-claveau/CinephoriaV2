@@ -48,6 +48,10 @@ RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available
 # Copier l'application
 COPY --from=builder /app /var/www/html
 
+# Copier le fichier .env et lui attribuer les bonnes permissions
+COPY .env /var/www/html/.env
+RUN chmod 644 /var/www/html/.env
+
 # Configuration .htaccess
 RUN echo '<IfModule mod_rewrite.c>\n\
     Options -MultiViews\n\
