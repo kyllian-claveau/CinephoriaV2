@@ -5,7 +5,7 @@ WORKDIR /app
 # Installer des dépendances système
 RUN apt-get update && apt-get install -y \
     git unzip libzip-dev zip curl \
-    libmysqlclient-dev \
+    libmariadb-dev \
     && docker-php-ext-install pdo pdo_mysql zip
 
 # Installer Composer
@@ -28,7 +28,7 @@ WORKDIR /var/www/html
 
 # Installer les extensions MySQL
 RUN apt-get update && apt-get install -y \
-    libmysqlclient-dev \
+    libmariadb-dev \
     && docker-php-ext-install pdo pdo_mysql
 
 # Configuration Apache
