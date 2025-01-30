@@ -24,4 +24,4 @@ jobs:
 
       - name: Deploy with Docker Compose
         run: |
-          ssh user@your_vps_ip "cd /var/www/cinephoria && docker-compose pull && docker-compose up -d --build"
+          ssh debian@5.196.21.36 "cd /var/www/cinephoria && docker-compose pull && docker-compose up -d --build"
