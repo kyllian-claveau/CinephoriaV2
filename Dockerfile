@@ -23,8 +23,6 @@ RUN composer global config --no-plugins allow-plugins.symfony/flex true \
 # Cloner le repository GitHub
 RUN git clone https://github.com/kyllian-claveau/CinephoriaV2.git /app
 
-# Copier le fichier .env directement dans /app
-COPY .env /app/.env
 RUN chmod 644 /app/.env
 
 # Installer les dépendances PHP via Composer
