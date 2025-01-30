@@ -51,9 +51,8 @@ services:
     container_name: nginx_proxy_manager
     restart: always
     ports:
-      - "80:80"
-      - "443:443"
       - "81:81" # Interface d'administration
+      - "443:443"
     volumes:
       - proxy_data:/data
       - letsencrypt_data:/etc/letsencrypt
