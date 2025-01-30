@@ -23,6 +23,10 @@ RUN composer global config --no-plugins allow-plugins.symfony/flex true \
 # Cloner le repository GitHub
 RUN git clone https://github.com/kyllian-claveau/CinephoriaV2.git /app
 
+# Copier le fichier .env directement dans /app
+COPY .env /app/.env
+RUN chmod 644 /app/.env
+
 # Installer les dépendances PHP via Composer
 WORKDIR /app
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-mongodb
@@ -47,10 +51,6 @@ RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available
 
 # Copier l'application
 COPY --from=builder /app /var/www/html
-
-# Copier le fichier .env directement dans /app
-COPY .env /app/.env
-RUN chmod 644 /app/.env
 
 # Configuration .htaccess
 RUN echo '<IfModule mod_rewrite.c>\n\
