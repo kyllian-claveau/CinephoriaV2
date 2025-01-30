@@ -52,6 +52,9 @@ COPY --from=builder /app /var/www/html
 COPY .env /var/www/html/.env
 RUN chmod 644 /var/www/html/.env
 
+# Créer un lien symbolique vers /app/.env
+RUN ln -s /var/www/html/.env /app/.env
+
 # Configuration .htaccess
 RUN echo '<IfModule mod_rewrite.c>\n\
     Options -MultiViews\n\
@@ -61,7 +64,7 @@ RUN echo '<IfModule mod_rewrite.c>\n\
 </IfModule>' > /var/www/html/public/.htaccess
 
 # Permissions
-RUN chmod -R 775 /var/www/html/var /var/www/html/public \
+RUN chmod -R 775 /var/www/html /var/www/html/var /var/www/html/public \
     && chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
