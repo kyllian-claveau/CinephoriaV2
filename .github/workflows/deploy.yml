@@ -26,9 +26,9 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no debian@5.196.21.36 "sudo rm -rf /var/www/cinephoria && sudo git clone https://github.com/kyllian-claveau/CinephoriaV2.git /var/www/cinephoria"
 
-      - name: Create .env file on VPS
+      - name: Create empty .env file
         run: |
-          ssh -o StrictHostKeyChecking=no debian@5.196.21.36 "echo -e 'APP_ENV=prod\nAPP_SECRET=\nDATABASE_URL=\nMESSENGER_TRANSPORT_DSN=\nMAILER_DSN=\nCORS_ALLOW_ORIGIN=\nJWT_SECRET_KEY=\nJWT_PUBLIC_KEY=\nJWT_PASSPHRASE=\nMONGODB_DSN=\nMONGODB_DB=\nMONGODB_COLLECTION=' | sudo tee /var/www/cinephoria/.env > /dev/null"
+          ssh debian@5.196.21.36 "sudo touch /var/www/cinephoria/.env"
 
       - name: Deploy with Docker Compose
         run: |
