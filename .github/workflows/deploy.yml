@@ -22,9 +22,9 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no debian@5.196.21.36 "sudo apt-get update && sudo apt-get install -y docker.io docker-compose git"
 
-      - name: Clone repository on VPS
+      - name: Remove existing directory and clone repository
         run: |
-          ssh -o StrictHostKeyChecking=no debian@5.196.21.36 "sudo git clone https://github.com/kyllian-claveau/CinephoriaV2.git /var/www/cinephoria"
+          ssh -o StrictHostKeyChecking=no debian@5.196.21.36 "sudo rm -rf /var/www/cinephoria && sudo git clone https://github.com/kyllian-claveau/CinephoriaV2.git /var/www/cinephoria"
 
       - name: Deploy with Docker Compose
         run: |
