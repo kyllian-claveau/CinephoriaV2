@@ -79,7 +79,6 @@ class ReservationControllerTest extends WebTestCase
         $this->entityManager->persist($session);
         $this->entityManager->flush();
 
-        // Test de la page d'index
         $this->client->request('GET', '/reservation', ['cinema' => $cinema->getId()]);
 
         $this->assertResponseIsSuccessful();
@@ -143,16 +142,13 @@ class ReservationControllerTest extends WebTestCase
         $this->entityManager->persist($session);
         $this->entityManager->flush();
 
-        // Simuler une connexion utilisateur
         $this->client->loginUser($user);
 
-        // Données de la réservation
         $reservationData = [
             'sessionId' => $session->getId(),
             'seats' => ['77', '78']
         ];
 
-        // Envoi de la requête de réservation
         $this->client->request(
             'POST',
             '/reservation/confirm',
@@ -233,7 +229,6 @@ class ReservationControllerTest extends WebTestCase
         $this->entityManager->persist($reservation);
         $this->entityManager->flush();
 
-        // Test format JSON
         $this->client->request(
             'GET',
             '/reservation/view/' . $reservation->getId(),
@@ -247,7 +242,6 @@ class ReservationControllerTest extends WebTestCase
     {
         parent::tearDown();
 
-        // Nettoyage de la base de données
         if ($this->entityManager) {
             $this->entityManager->close();
             $this->entityManager = null;
