@@ -26,6 +26,21 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no debian@5.196.21.36 "sudo rm -rf /var/www/cinephoria && sudo git clone https://github.com/kyllian-claveau/CinephoriaV2.git /var/www/cinephoria"
 
+      - name: Create .env file on the VPS with secrets
+        run: |
+          ssh debian@5.196.21.36 "echo 'APP_ENV=prod' > /var/www/cinephoria/.env && \
+                                  echo 'APP_SECRET=${{ secrets.APP_SECRET }}' >> /var/www/cinephoria/.env && \
+                                  echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' >> /var/www/cinephoria/.env && \
+                                  echo 'MESSENGER_TRANSPORT_DSN=${{ secrets.MESSENGER_TRANSPORT_DSN }}' >> /var/www/cinephoria/.env && \
+                                  echo 'MAILER_DSN=${{ secrets.MAILER_DSN }}' >> /var/www/cinephoria/.env && \
+                                  echo 'CORS_ALLOW_ORIGIN=${{ secrets.CORS_ALLOW_ORIGIN }}' >> /var/www/cinephoria/.env && \
+                                  echo 'JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}' >> /var/www/cinephoria/.env && \
+                                  echo 'JWT_PUBLIC_KEY=${{ secrets.JWT_PUBLIC_KEY }}' >> /var/www/cinephoria/.env && \
+                                  echo 'JWT_PASSPHRASE=${{ secrets.JWT_PASSPHRASE }}' >> /var/www/cinephoria/.env && \
+                                  echo 'MONGODB_DSN=${{ secrets.MONGODB_DSN }}' >> /var/www/cinephoria/.env && \
+                                  echo 'MONGODB_DB=${{ secrets.MONGODB_DB }}' >> /var/www/cinephoria/.env && \
+                                  echo 'MONGODB_COLLECTION=${{ secrets.MONGODB_COLLECTION }}' >> /var/www/cinephoria/.env"
+
       - name: Deploy with Docker Compose
         run: |
           ssh debian@5.196.21.36 "cd /var/www/cinephoria && sudo docker-compose pull && sudo docker-compose up -d --force-recreate"
