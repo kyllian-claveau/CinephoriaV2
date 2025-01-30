@@ -27,7 +27,7 @@ jobs:
           ssh -o StrictHostKeyChecking=no debian@5.196.21.36 "
             if [ ! -d \"/var/www/cinephoria\" ]; then 
               sudo mkdir -p /var/www/cinephoria && 
-              git clone https://github.com/kyllian-claveau/CinephoriaV2.git /var/www/cinephoria; 
+              sudo git clone https://github.com/kyllian-claveau/CinephoriaV2.git /var/www/cinephoria; 
             fi
           "
 
