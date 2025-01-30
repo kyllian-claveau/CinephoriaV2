@@ -6,7 +6,12 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     git unzip libzip-dev zip curl \
     libmariadb-dev \
-    && docker-php-ext-install pdo pdo_mysql zip
+    libssl-dev libcurl4-openssl-dev pkg-config libssl1.1 && \
+    docker-php-ext-install pdo pdo_mysql zip
+
+# Installer l'extension MongoDB via PECL
+RUN pecl install mongodb \
+    && docker-php-ext-enable mongodb
 
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -20,7 +25,7 @@ RUN git clone https://github.com/kyllian-claveau/CinephoriaV2.git /app
 
 # Installer les dépendances PHP via Composer
 WORKDIR /app
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-mongodb
 
 # Étape 2 : Image de production
 FROM php:8.3-apache
@@ -30,6 +35,10 @@ WORKDIR /var/www/html
 RUN apt-get update && apt-get install -y \
     libmariadb-dev \
     && docker-php-ext-install pdo pdo_mysql
+
+# Installer l'extension MongoDB
+RUN apt-get update && apt-get install -y libssl-dev libcurl4-openssl-dev pkg-config libssl1.1 && pecl install mongodb \
+    && docker-php-ext-enable mongodb
 
 # Configuration Apache
 RUN a2enmod rewrite
