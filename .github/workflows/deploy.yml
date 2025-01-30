@@ -16,7 +16,7 @@ jobs:
       - name: Set up SSH key
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}  # Ajoute la clé privée SSH dans les secrets GitHub
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Install Docker and Docker Compose on VPS
         run: |
@@ -24,12 +24,7 @@ jobs:
 
       - name: Clone repository on VPS
         run: |
-          ssh -o StrictHostKeyChecking=no debian@5.196.21.36 "
-            if [ ! -d \"/var/www/cinephoria\" ]; then 
-              sudo mkdir -p /var/www/cinephoria && 
-              sudo git clone https://github.com/kyllian-claveau/CinephoriaV2.git /var/www/cinephoria; 
-            fi
-          "
+          ssh -o StrictHostKeyChecking=no debian@5.196.21.36 "sudo git clone https://github.com/kyllian-claveau/CinephoriaV2.git /var/www/cinephoria"
 
       - name: Deploy with Docker Compose
         run: |
