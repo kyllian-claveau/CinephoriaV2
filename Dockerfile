@@ -26,8 +26,6 @@ RUN git clone https://github.com/kyllian-claveau/CinephoriaV2.git /app
 
 # Copier le fichier .env directement dans /app
 COPY .env /app/.env
-COPY composer.json /app/
-COPY composer.lock /app/
 RUN chmod 644 /app/.env
 RUN chown -R www-data:www-data /var/www/cinephoria/vendor
 
