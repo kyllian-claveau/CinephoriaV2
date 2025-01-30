@@ -40,6 +40,7 @@ jobs:
                                   echo 'MONGODB_DSN=${{ secrets.MONGODB_DSN }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null && \
                                   echo 'MONGODB_DB=${{ secrets.MONGODB_DB }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null && \
                                   echo 'MONGODB_COLLECTION=${{ secrets.MONGODB_COLLECTION }}' | sudo tee -a /var/www/cinephoria/.env > /dev/null"
+          
 
       - name: Deploy with Docker Compose
         run: |
