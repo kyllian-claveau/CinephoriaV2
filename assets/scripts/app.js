@@ -5,9 +5,16 @@ import '../styles/app.css';
     let endDateInput = document.getElementById("session_endDate");
 
     startDateInput.addEventListener("change", function () {
-    endDateInput.min = startDateInput.value;
-    if (endDateInput.value < startDateInput.value) {
-    endDateInput.value = startDateInput.value;
+    let startDateTime = new Date(startDateInput.value);
+
+    if (!isNaN(startDateTime.getTime())) {
+    let minDateTime = startDateTime.toISOString().slice(0, 16);
+    endDateInput.min = minDateTime;
+
+    let endDateTime = new Date(endDateInput.value);
+    if (endDateTime < startDateTime) {
+    endDateInput.value = minDateTime;
+}
 }
 });
 });
