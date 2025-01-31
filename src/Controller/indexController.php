@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Film;
+use App\Entity\Review;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -20,8 +21,14 @@ class indexController extends AbstractController
             return $this->redirectToRoute('app_change_password');
         }
         $filmsFromLastWednesday =$entityManager->getRepository(Film::class)->findFilmsFromLastWednesday();
+        $filmsWithRatings = [];
+        foreach ($filmsFromLastWednesday as $film) {
+            $averageRating = $entityManager->getRepository(Review::class)->getAverageRatingForFilm($film->getId());
+            $film->averageRating = $averageRating;
+        }
         return $this->render('index.html.twig', [
             'films' => $filmsFromLastWednesday,
+            'filmsWithRatings' => $filmsWithRatings,
         ]);
     }
 }
