@@ -29,7 +29,6 @@ class filmsController extends AbstractController
         $dateFilter = null;
         if ($selectedDate) {
             $dateFilter = \DateTime::createFromFormat('Y-m-d', $selectedDate);
-
             if ($dateFilter->format('Y-m-d') < (new \DateTime())->format('Y-m-d')) {
                 return $this->redirectToRoute('app_films', [
                     'cinema' => $cinemaId,
