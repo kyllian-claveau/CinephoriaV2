@@ -3,8 +3,6 @@ version: '3.7'
 services:
   database:
     image: mysql:8.0
-    container_name: symfony_database
-    restart: always
     ports:
       - "3306:3306"
     environment:
@@ -14,58 +12,15 @@ services:
       MYSQL_PASSWORD: ${DATABASE_PASSWORD:-cinephoriapassword}
     volumes:
       - db_data:/var/lib/mysql
-    networks:
-      - symfony_net
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: symfony_phpmyadmin
-    restart: always
     ports:
       - "8080:80"
     environment:
       PMA_HOST: database
       MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD:-cinephoriapassword}
-    networks:
-      - symfony_net
-
-  symfony_app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: symfony_app
-    depends_on:
-      - database
-    environment:
-      APP_ENV: prod
-      DATABASE_URL: "mysql://${DATABASE_USER:-cinephoria}:${DATABASE_PASSWORD:-cinephoriapassword}@database:3306/${DATABASE_NAME:-cinephoriaproject}"
-    volumes:
-      - .:/var/www/html
-    networks:
-      - symfony_net
-    ports:
-      - "80:80"
-
-  proxy:
-    image: 'jc21/nginx-proxy-manager:latest'
-    container_name: nginx_proxy_manager
-    restart: always
-    ports:
-      - "81:81" # Interface d'administration
-      - "443:443"
-    volumes:
-      - proxy_data:/data
-      - letsencrypt_data:/etc/letsencrypt
-    networks:
-      - symfony_net
-
-networks:
-  symfony_net:
 
 volumes:
   db_data:
   mongodb_data:
-  proxy_data:
-  letsencrypt_data:
-
-

@@ -7,6 +7,14 @@
 /public/bundles/
 /public/build/
 
+# .env files (configuration sensitive data)
+.env
+.env.local
+.env.*.local
+/.env.dev
+/.envrc
+/.env.local.php
+
 # PHPStorm & IDE specific files
 .idea/
 /.vscode/
