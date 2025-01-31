@@ -65,4 +65,34 @@ class SessionRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    public function findSessionsByFilters(?int $cinemaId, ?\DateTime $dateFilter = null): array
+    {
+        $qb = $this->createQueryBuilder('s')
+            ->leftJoin('s.film', 'f') // Relier les séances aux films
+            ->leftJoin('s.cinema', 'c') // Relier les séances aux cinémas
+            ->addSelect('f', 'c'); // Charger les films et cinémas associés
+
+        // Filtrage par cinéma si spécifié
+        if ($cinemaId) {
+            $qb->andWhere('c.id = :cinemaId')
+                ->setParameter('cinemaId', $cinemaId);
+        }
+
+        // Filtrage par date si spécifié
+        if ($dateFilter) {
+            $startOfDay = clone $dateFilter;
+            $startOfDay->setTime(0, 0, 0);
+
+            $endOfDay = clone $dateFilter;
+            $endOfDay->setTime(23, 59, 59);
+
+            $qb->andWhere('s.startDate BETWEEN :startOfDay AND :endOfDay')
+                ->setParameter('startOfDay', $startOfDay)
+                ->setParameter('endOfDay', $endOfDay);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+
 }

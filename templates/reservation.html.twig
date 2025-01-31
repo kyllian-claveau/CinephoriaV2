@@ -22,6 +22,12 @@
                     </div>
 
                     <div>
+                        <label for="date" class="block text-lg text-white">Date</label>
+                        <input type="date" name="date" id="date" class="block w-full p-2 mt-2 rounded-lg bg-gray-700 text-white"
+                               value="{{ app.request.query.get('date', '') }}" min="{{ 'now'|date('Y-m-d') }}">
+                    </div>
+
+                    <div>
                         <label for="number_of_people" class="block text-lg text-white">Nombre de personnes</label>
                         <input type="number" name="number_of_people" id="number_of_people" min="1" class="block w-full p-2 mt-2 rounded-lg bg-gray-700 text-white" value="{{ app.request.query.get('number_of_people', 1) }}">
                     </div>
@@ -62,12 +68,15 @@
                                 <div class="bg-gray-800 p-4 rounded-lg">
                                     <h4 class="text-lg font-bold text-white mb-2">Séances disponibles :</h4>
                                     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                                        {% for session in filmData.sessions %}
-                                            {% set isAvailable = available_seats >= app.request.query.get('number_of_people', 1) %}
-                                            <a href="{{ isAvailable ? path('app_seats_reservation', {'sessionId': session.id}) : '#' }}" class="bg-gray-700 text-white py-2 px-4 rounded-md hover:bg-yellow-500 transition-all {% if not isAvailable %}pointer-events-none opacity-50 line-through{% endif %}">
-                                                {{ session.startDate|date('H\\hi') }}
+                                        {% for sessionData in filmData.sessions %}
+                                            {% set availableSeats = sessionData.availableSeats %}
+                                            {% set isAvailable = availableSeats >= app.request.query.get('number_of_people', 1) %}
+                                            <a href="{{ isAvailable ? path('app_seats_reservation', {'sessionId': sessionData.session.id}) : '#' }}" class="bg-gray-700 text-white py-2 px-4 rounded-md hover:bg-yellow-500 transition-all {% if not isAvailable %}pointer-events-none opacity-50 line-through{% endif %}">
+                                                {{ sessionData.session.startDate|date('H\\hi') }}
                                                 <br>
-                                                <span class="text-xs">{{ available_seats }} places disponibles</span>
+                                                <span class="text-xs">{{ availableSeats }} places disponibles</span>
+                                                <br>
+                                                <span class="text-xs">{{ sessionData.session.cinema.name }}</span>
                                             </a>
                                         {% endfor %}
                                     </div>
