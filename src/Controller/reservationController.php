@@ -245,18 +245,12 @@ class reservationController extends AbstractController
         }
 
         // Passer les informations à la vue
-        return $this->render('employee/Room/show.html.twig', [
+        return $this->render('reservation_room.html.twig', [
             'session' => $session,
             'room' => $room,
             'stairs' => $stairs,
             'accessibleSeats' => $accessibleSeats,
             'user' => $user,
         ]);
-    }
-
-    #[Route("/seat", name: "app_seat")]
-    public function seat(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        return $this->render('seat.html.twig');
     }
 }

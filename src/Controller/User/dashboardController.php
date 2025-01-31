@@ -64,7 +64,7 @@ class dashboardController extends AbstractController
             throw $this->createNotFoundException('La réservation n\'existe pas.');
         }
 
-        return $this->render('user/show.html.twig', [
+        return $this->render('user/show_order.html.twig', [
             'reservation' => $reservation
         ]);
     }
