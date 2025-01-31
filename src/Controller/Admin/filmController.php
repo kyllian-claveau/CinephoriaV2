@@ -19,7 +19,7 @@ class filmController extends AbstractController
     public function createRequest(Request $request, EntityManagerInterface $entityManager): Response
     {
         $currentDay = (new \DateTime())->format('l');
-        if ($currentDay !== 'Friday') {
+        if ($currentDay !== 'Wednesday') {
             $this->addFlash('error', 'Les films ne peuvent être créés que le mercredi.');
             return $this->redirectToRoute('app_admin_film');
         }
