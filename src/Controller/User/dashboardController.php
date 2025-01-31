@@ -18,10 +18,20 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(path: '/user')]
 class dashboardController extends AbstractController
 {
+    #[Route(path:'/not-active', name:'app_user_not_active', methods: ['GET'])]
+    public function notActive(): Response
+    {
+        return $this->render('user/active_account.html.twig');
+    }
     #[Route(path: '/dashboard', name: 'app_user_dashboard', methods: ["GET"])]
     public function index(EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_user_not_active');
+        }
+
         $reservations = $entityManager->getRepository(Reservation::class)
             ->findBy(['user' => $user], ['createdAt' => 'DESC'], 2);
 
