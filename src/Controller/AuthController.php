@@ -44,6 +44,9 @@ class AuthController extends AbstractController
 
     #[Route(path:'/login', name: 'app_login')]
     public function login(){
+        if ($this->security->getUser()) {
+            return $this->redirectToRoute('app_index');
+        }
         $loginForm = $this->createForm(LoginType::class);
         return $this->render('auth/login.html.twig', [
             'loginForm' => $loginForm->createView()
@@ -109,7 +112,6 @@ class AuthController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Check if email already exists
             $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
             if ($existingUser) {
                 $this->addFlash('error', 'Cet email est déjà utilisé. Veuillez en choisir un autre.');
@@ -124,15 +126,12 @@ class AuthController extends AbstractController
                 $user->setRoles(['ROLE_USER']);
                 $user->setIsActive(false); // Account will remain inactive until confirmed
 
-                // Generate a confirmation token
                 $confirmationToken = bin2hex(random_bytes(32));
                 $user->setConfirmationToken($confirmationToken);
 
-                // Save the user
                 $entityManager->persist($user);
                 $entityManager->flush();
 
-                // Send confirmation email
                 $confirmationUrl = $this->generateUrl(
                     'app_confirm_account',
                     ['token' => $confirmationToken],
@@ -150,14 +149,11 @@ class AuthController extends AbstractController
 
                 $mailer->send($email);
 
-                // Add success message
                 $this->addFlash('success', 'Un e-mail de confirmation a été envoyé à votre adresse.');
 
-                // Redirect to login page with query parameter
                 return $this->redirectToRoute('app_login', ['confirmation_sent' => true]);
 
             } catch (\Exception $e) {
-                // If any exception occurs, display the error message
                 $this->addFlash('error', 'Une erreur est survenue. Veuillez réessayer plus tard.');
                 return $this->render('auth/register.html.twig', [
                     'form' => $form->createView()

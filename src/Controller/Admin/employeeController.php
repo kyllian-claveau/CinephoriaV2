@@ -38,7 +38,7 @@ class employeeController extends AbstractController
             $entityManager->persist($employee);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute('app_admin_employee');
         }
 
         return $this->render('admin/Employee/create.html.twig', [
