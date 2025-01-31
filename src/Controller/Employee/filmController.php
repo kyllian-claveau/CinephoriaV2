@@ -18,6 +18,12 @@ class filmController extends AbstractController
     #[Route('/film/create', name: 'app_employee_film_create')]
     public function createRequest(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_employee_not_active');
+        }
+
         $currentDay = (new \DateTime())->format('l');
         if ($currentDay !== 'Wednesday') {
             $this->addFlash('error', 'Les films ne peuvent être créés que le mercredi.');
@@ -55,6 +61,12 @@ class filmController extends AbstractController
     #[Route('/film', name: 'app_employee_film')]
     public function list(EntityManagerInterface $entityManager)
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_employee_not_active');
+        }
+
         $films = $entityManager->getRepository(Film::class)->findAll();
         return $this->render('employee/Film/list.html.twig', [
             'films' => $films,
@@ -64,6 +76,12 @@ class filmController extends AbstractController
     #[Route('/film/{id}', name: 'app_employee_film_edit')]
     public function editRequest(int $id, Request $request, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_employee_not_active');
+        }
+
         $film = $entityManager->getRepository(Film::class)->find($id);
         if (!$film) {
             throw $this->createNotFoundException('Le film n\'existe pas.');
@@ -99,6 +117,12 @@ class filmController extends AbstractController
     #[Route('/film/delete/{id}', name: 'app_employee_film_delete')]
     public function deleteRequest(int $id, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_employee_not_active');
+        }
+
         $film = $entityManager->getRepository(Film::class)->find($id);
         if (!$film) {
             throw $this->createNotFoundException('Le film n\'existe pas.');

@@ -59,6 +59,11 @@ class dashboardController extends AbstractController
     #[Route(path: '/orders', name: 'app_user_orders', methods: ["GET"])]
     public function list(EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_user_not_active');
+        }
         $reservations = $entityManager->getRepository(Reservation::class)->findAll();
 
         return $this->render('user/orders.html.twig', [
@@ -69,6 +74,11 @@ class dashboardController extends AbstractController
     #[Route(path: '/order/{id}', name: 'app_user_order', methods: ["GET"])]
     public function show(int $id, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_user_not_active');
+        }
         $reservation = $entityManager->getRepository(Reservation::class)->find($id);
         if (!$reservation) {
             throw $this->createNotFoundException('La réservation n\'existe pas.');
@@ -82,6 +92,11 @@ class dashboardController extends AbstractController
     #[Route(path: '/reviews', name: 'app_user_reviews', methods: ["GET"])]
     public function list_reviews(EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_user_not_active');
+        }
         $reviews = $entityManager->getRepository(Review::class)->findAll();
 
 
@@ -93,6 +108,11 @@ class dashboardController extends AbstractController
     #[Route(path: '/review/create/{reservationId}', name: 'app_user_review')]
     public function show_review(int $reservationId, Request $request, UserRepository $userRepository, APIController $apiController, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_user_not_active');
+        }
         $user = $this->getUser();
 
         $reservation = $entityManager->getRepository(Reservation::class)->find($reservationId);

@@ -18,6 +18,12 @@ class sessionController extends AbstractController
     #[Route('/session/create', name: 'app_admin_session_create')]
     public function createRequest (Request $request, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_admin_not_active');
+        }
+
         $session = new Session();
         $form = $this->createForm(SessionType::class, $session);
         $form->handleRequest($request);
@@ -39,6 +45,12 @@ class sessionController extends AbstractController
     #[Route('/session', name: 'app_admin_session')]
     public function list(EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_admin_not_active');
+        }
+
         $sessions = $entityManager->getRepository(Session::class)->findAll();
         return $this->render('admin/Session/list.html.twig', [
             'sessions' => $sessions
@@ -48,6 +60,12 @@ class sessionController extends AbstractController
     #[Route('/session/{id}', name: 'app_admin_session_edit')]
     public function editRequest(int $id, Request $request, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_admin_not_active');
+        }
+
         $session = $entityManager->getRepository(Session::class)->find($id);
         if (!$session) {
             throw $this->createNotFoundException('La séance n\'existe pas.');
@@ -74,6 +92,12 @@ class sessionController extends AbstractController
     #[Route('/session/delete/{id}', name: 'app_admin_session_delete')]
     public function deleteRequest(int $id, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_admin_not_active');
+        }
+
         $session = $entityManager->getRepository(Session::class)->find($id);
         if (!$session) {
             throw $this->createNotFoundException('La séance n\'existe pas.');

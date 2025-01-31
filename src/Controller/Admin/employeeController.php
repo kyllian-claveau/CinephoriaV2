@@ -23,6 +23,12 @@ class employeeController extends AbstractController
     #[Route('/employee/create', name: 'app_admin_employee_create')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_admin_not_active');
+        }
+
         $employee = new User();
         $form = $this->createForm(RegisterType::class, $employee);
         $form->handleRequest($request);
@@ -50,6 +56,12 @@ class employeeController extends AbstractController
     #[Route('/employee', name: 'app_admin_employee')]
     public function list(UserRepository $userRepository)
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_admin_not_active');
+        }
+
         $employees = $userRepository->findEmployees();
         return $this->render('admin/Employee/list.html.twig', [
             'employees' => $employees
@@ -58,6 +70,12 @@ class employeeController extends AbstractController
     #[Route('/employee/{id}', name: 'app_admin_employee_edit')]
     public function editEmployee(int $id, Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_admin_not_active');
+        }
+
         $employee = $userRepository->find($id);
         if (!$employee || !in_array('ROLE_EMPLOYEE', $employee->getRoles())) {
             throw $this->createNotFoundException('L\'employé n\'existe pas.');
@@ -82,6 +100,12 @@ class employeeController extends AbstractController
 
     #[Route('/employee/change-password/{id}', name: 'app_admin_employee_change_password')]
     public function changePassword(int $id, Request $request, UserRepository $userRepository,UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_admin_not_active');
+        }
+
         $employee = $userRepository->find($id);
         if (!$employee || !in_array('ROLE_EMPLOYEE', $employee->getRoles())) {
             throw $this->createNotFoundException('L\'employé n\'existe pas.');
@@ -115,6 +139,12 @@ class employeeController extends AbstractController
     #[Route('/employee/delete/{id}', name: 'app_admin_employee_delete')]
     public function deleteRequest(int $id, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_admin_not_active');
+        }
+
         $employee = $entityManager->getRepository(User::class)->find($id);
         if (!$employee) {
             throw $this->createNotFoundException('L\'employé n\'existe pas.');

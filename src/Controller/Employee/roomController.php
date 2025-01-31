@@ -17,6 +17,12 @@ class roomController extends AbstractController
     #[Route('/room/create', name: 'app_employee_room_create')]
     public function createRequest(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_employee_not_active');
+        }
+
         $room = new Room();
         $form = $this->createForm(RoomType::class, $room);
         $form->handleRequest($request);
@@ -74,6 +80,12 @@ class roomController extends AbstractController
     #[Route('/room', name: 'app_employee_room')]
     public function list(EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_employee_not_active');
+        }
+
         $rooms = $entityManager->getRepository(Room::class)->findAll();
         return $this->render('employee/Room/list.html.twig', [
             'rooms' => $rooms
@@ -83,6 +95,12 @@ class roomController extends AbstractController
     #[Route('/room/{id}', name: 'app_employee_room_edit')]
     public function editRequest(int $id, Request $request, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_employee_not_active');
+        }
+
         $room = $entityManager->getRepository(Room::class)->find($id);
         if (!$room) {
             throw $this->createNotFoundException('La salle n\'existe pas.');
@@ -109,6 +127,12 @@ class roomController extends AbstractController
     #[Route('/room/delete/{id}', name: 'app_employee_room_delete')]
     public function deleteRequest(int $id, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_employee_not_active');
+        }
+
         $room = $entityManager->getRepository(Room::class)->find($id);
         if (!$room) {
             throw $this->createNotFoundException('La salle n\'existe pas.');

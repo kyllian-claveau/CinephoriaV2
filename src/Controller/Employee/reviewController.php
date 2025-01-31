@@ -22,6 +22,12 @@ class reviewController extends AbstractController
     #[Route('/reviews/to-validate', name: 'app_employee_reviews')]
     public function listReviewsToValidate(EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_employee_not_active');
+        }
+
         $reviews = $entityManager->getRepository(Review::class)->findBy(['validated' => false]);
 
         return $this->render('employee/Review/to_validate.html.twig', [
@@ -32,6 +38,12 @@ class reviewController extends AbstractController
     #[Route('/reviews/approve/{id}', name: 'app_employee_review_approve')]
     public function approve(int $id, EntityManagerInterface $entityManager): RedirectResponse
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_employee_not_active');
+        }
+
         $review = $entityManager->getRepository(Review::class)->find($id);
 
         if (!$review) {
@@ -49,6 +61,12 @@ class reviewController extends AbstractController
     #[Route('/reviews/reject/{id}', name: 'app_employee_review_reject')]
     public function reject(int $id, EntityManagerInterface $entityManager): RedirectResponse
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_employee_not_active');
+        }
+
         $review = $entityManager->getRepository(Review::class)->find($id);
 
         if (!$review) {

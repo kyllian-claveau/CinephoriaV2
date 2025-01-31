@@ -20,6 +20,12 @@ class sessionController extends AbstractController
     #[Route('/session/create', name: 'app_employee_session_create')]
     public function createRequest (Request $request, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_employee_not_active');
+        }
+
         $session = new Session();
         $form = $this->createForm(SessionType::class, $session);
         $form->handleRequest($request);
@@ -48,6 +54,12 @@ class sessionController extends AbstractController
     #[Route('/session', name: 'app_employee_session')]
     public function list(EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_employee_not_active');
+        }
+
         $sessions = $entityManager->getRepository(Session::class)->findAll();
         return $this->render('employee/Session/list.html.twig', [
             'sessions' => $sessions
@@ -57,6 +69,12 @@ class sessionController extends AbstractController
     #[Route('/session/{id}', name: 'app_employee_session_edit')]
     public function editRequest(int $id, Request $request, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+
+        if (!$user->getIsActive()) {
+            return $this->redirectToRoute('app_employee_not_active');
+        }
+
         $session = $entityManager->getRepository(Session::class)->find($id);
         if (!$session) {
             throw $this->createNotFoundException('La séance n\'existe pas.');
