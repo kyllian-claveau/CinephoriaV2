@@ -18,6 +18,12 @@ class filmController extends AbstractController
     #[Route('/film/create', name: 'app_admin_film_create')]
     public function createRequest(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $currentDay = (new \DateTime())->format('l');
+        if ($currentDay !== 'Friday') {
+            $this->addFlash('error', 'Les films ne peuvent être créés que le mercredi.');
+            return $this->redirectToRoute('app_admin_film');
+        }
+
         $film = new Film();
         $form = $this->createForm(FilmType::class, $film);
         $form->handleRequest($request);
@@ -41,16 +47,17 @@ class filmController extends AbstractController
         }
 
         return $this->render('admin/Film/create.html.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ]);
     }
+
 
     #[Route('/film', name: 'app_admin_film')]
     public function list(EntityManagerInterface $entityManager)
     {
         $films = $entityManager->getRepository(Film::class)->findAll();
         return $this->render('admin/Film/list.html.twig', [
-            'films' => $films
+            'films' => $films,
         ]);
     }
 
