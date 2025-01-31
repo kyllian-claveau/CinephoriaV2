@@ -62,13 +62,13 @@
                                 <p class="text-gray-400 text-sm mt-2">Genre: {{ film.getGenresAsString() }}</p>
                                 <p class="text-gray-400 text-sm mt-1">Durée: {{ film.duration }} minutes</p>
                             </div>
-                            <div class="p-2 opacity-0 h-0 group-hover:opacity-100 group-hover:h-20 transition-all duration-300">
+                            <div class="p-2 opacity-0 h-0 group-hover:opacity-100 group-hover:h-20 transition-all mb-2 duration-300">
                                 {% if film.averageRating is not null %}
                                     <p class="text-yellow-500 mt-2">Note moyenne: {{ film.averageRating }} / 5</p>
                                 {% else %}
                                     <p class="text-gray-400 mt-2">Aucune note pour ce film</p>
                                 {% endif %}
-                                <a href="{{ path('app_film_show', { id: film.id } ) }}" class="mt-2 mb-2 inline-block bg-yellow-500 hover:bg-yellow-400 text-black py-2 px-4 rounded-full text-sm font-semibold transition-all">Réserver</a>
+                                <a href="{{ path('app_film_show', { id: film.id } ) }}" class="mt-2 mb-2 inline-block bg-yellow-500 hover:bg-yellow-400 text-black py-2 px-4 rounded-full text-sm font-semibold transition-all">Voir les séances</a>
                             </div>
                         </div>
                     {% else %}
