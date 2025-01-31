@@ -21,12 +21,27 @@ class filmsController extends AbstractController
     {
         $cinemaId = $request->query->get('cinema');
         $genreId = $request->query->get('genre');
+        $selectedDate = $request->query->get('date');
 
         $cinemaId = $cinemaId ? intval($cinemaId) : null;
         $genreId = $genreId ? intval($genreId) : null;
 
+        $dateFilter = null;
+        if ($selectedDate) {
+            $dateFilter = \DateTime::createFromFormat('Y-m-d', $selectedDate);
+
+            if ($dateFilter->format('Y-m-d') < (new \DateTime())->format('Y-m-d')) {
+                return $this->redirectToRoute('app_films', [
+                    'cinema' => $cinemaId,
+                    'genre' => $genreId,
+                    'date' => (new \DateTime())->format('Y-m-d')
+                ]);
+            }
+
+        }
+
         $filmsFilter = $entityManager->getRepository(Film::class)
-            ->findFilmsByFilters($cinemaId, $genreId);
+            ->findFilmsByFilters($cinemaId, $genreId, $dateFilter);
 
         $films = $entityManager->getRepository(Film::class)->findAll();
         $cinemas = $entityManager->getRepository(Cinema::class)->findAll();

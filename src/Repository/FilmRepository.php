@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Film;
+use App\Entity\Session;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -21,10 +22,9 @@ class FilmRepository extends ServiceEntityRepository
         $today = new \DateTime();
         $isWednesday = $today->format('l') === 'Wednesday';
 
-        // Si c'est mercredi, prendre le début de la journée jusqu'à maintenant
         if ($isWednesday) {
             $startOfDay = $today->format('Y-m-d 00:00:00');
-            $endOfDay = $today->format('Y-m-d H:i:s'); // Heure actuelle
+            $endOfDay = $today->format('Y-m-d H:i:s');
 
             return $this->createQueryBuilder('f')
                 ->where('f.createdAt BETWEEN :start AND :end')
@@ -35,7 +35,6 @@ class FilmRepository extends ServiceEntityRepository
                 ->getResult();
         }
 
-        // Sinon, prendre le dernier mercredi
         $lastWednesday = new \DateTime('last Wednesday');
         $nextThursday = (clone $lastWednesday)->modify('+1 day'); // Fin du dernier mercredi
 
@@ -48,14 +47,14 @@ class FilmRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-
-
-    public function findFilmsByFilters(?int $cinemaId, ?int $genreId): array
+    public function findFilmsByFilters(?int $cinemaId, ?int $genreId, ?\DateTime $dateFilter = null): array
     {
         $qb = $this->createQueryBuilder('f')
-            ->leftJoin('f.cinemas', 'c') // Relier les films aux cinémas
-            ->leftJoin('f.genres', 'g')  // Relier les films aux genres
-            ->addSelect('c', 'g'); // Ajouter les autres entités pour filtrer
+            ->distinct() // Évite les doublons
+            ->leftJoin('f.cinemas', 'c')
+            ->leftJoin('f.genres', 'g')
+            ->leftJoin(Session::class, 's', 'WITH', 's.film = f')
+            ->addSelect('c', 'g');
 
         // Filtrage par cinéma si spécifié
         if ($cinemaId) {
@@ -69,9 +68,23 @@ class FilmRepository extends ServiceEntityRepository
                 ->setParameter('genreId', $genreId);
         }
 
-        // Retourner les résultats
+        // Filtrage par date des séances si spécifié
+        if ($dateFilter) {
+            $startOfDay = clone $dateFilter;
+            $startOfDay->setTime(0, 0, 0);
+
+            $endOfDay = clone $dateFilter;
+            $endOfDay->setTime(23, 59, 59);
+
+            $qb->andWhere('s.startDate BETWEEN :startOfDay AND :endOfDay')
+                ->setParameter('startOfDay', $startOfDay)
+                ->setParameter('endOfDay', $endOfDay);
+        }
+
         return $qb->getQuery()->getResult();
     }
+
+
 
     public function findFilmsByCinemas(?int $cinemaId): array
     {
