@@ -1,7 +1,7 @@
 import '../styles/app.css';
 
     document.addEventListener("DOMContentLoaded", function () {
-    let startDateInput = document.getElementById("session_endDate");
+    let startDateInput = document.getElementById("session_startDate");
     let endDateInput = document.getElementById("session_endDate");
 
     startDateInput.addEventListener("change", function () {
