@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<h1>🌟 SoigneMoi</h1>
+<h1>🌟 Cinéphoria</h1>
 
 <h2>📝 Description</h2>
 <p>
