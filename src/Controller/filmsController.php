@@ -69,7 +69,25 @@ class filmsController extends AbstractController
             throw $this->createNotFoundException('Film non trouvé');
         }
 
-        $sessions = $sessionRepository->findByFilm($film);
+        // Créer un objet DateTime pour aujourd'hui
+        $today = new \DateTime();
+        $today->setTime(0, 0); // Régler à minuit
+
+        // Créer un objet DateTime pour demain
+        $tomorrow = clone $today;
+        $tomorrow->modify('+1 day');
+
+        // Récupérer uniquement les séances du jour
+        $sessions = $sessionRepository->createQueryBuilder('s')
+            ->where('s.film = :film')
+            ->andWhere('s.startDate >= :today')
+            ->andWhere('s.startDate < :tomorrow')
+            ->setParameter('film', $film)
+            ->setParameter('today', $today)
+            ->setParameter('tomorrow', $tomorrow)
+            ->orderBy('s.startDate', 'ASC')
+            ->getQuery()
+            ->getResult();
 
         $cinemas = [];
         foreach ($sessions as $session) {
