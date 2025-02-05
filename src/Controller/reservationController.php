@@ -33,21 +33,20 @@ class reservationController extends AbstractController
 
         $cinemaId = $cinemaId ? intval($cinemaId) : null;
 
-        $dateFilter = null;
-        if ($selectedDate) {
-            $dateFilter = \DateTime::createFromFormat('Y-m-d', $selectedDate);
-
-            if ($dateFilter->format('Y-m-d') < (new \DateTime())->format('Y-m-d')) {
-                return $this->redirectToRoute('app_reservation', [
-                    'cinema' => $cinemaId,
-                    'number_of_people' => $numberOfPeople,
-                    'date' => (new \DateTime())->format('Y-m-d')
-                ]);
-            }
-
+        if (!$selectedDate) {
+            $selectedDate = (new \DateTime())->format('Y-m-d');
         }
-        else{
-        $selectedDate = (new \DateTime())->format('Y-m-d');
+
+        // Créer le dateFilter dans tous les cas
+        $dateFilter = \DateTime::createFromFormat('Y-m-d', $selectedDate);
+
+        // Vérifier si la date n'est pas dans le passé
+        if ($dateFilter->format('Y-m-d') < (new \DateTime())->format('Y-m-d')) {
+            return $this->redirectToRoute('app_reservation', [
+                'cinema' => $cinemaId,
+                'number_of_people' => $numberOfPeople,
+                'date' => (new \DateTime())->format('Y-m-d')
+            ]);
         }
 
         $sessionsFilter = $entityManager->getRepository(Session::class)
@@ -65,15 +64,12 @@ class reservationController extends AbstractController
 
             $availableSeats = $totalSeats - $reservedSeatsCount;
 
-            // Ajouter les informations sur les places disponibles à chaque session
             if (!isset($filmsSessions[$film->getId()])) {
                 $filmsSessions[$film->getId()] = [
                     'film' => $film,
                     'sessions' => [],
                 ];
             }
-
-            // Ajoute les informations de chaque session avec les places disponibles
             $filmsSessions[$film->getId()]['sessions'][] = [
                 'session' => $session,
                 'availableSeats' => $availableSeats,
