@@ -46,6 +46,9 @@ class reservationController extends AbstractController
             }
 
         }
+        else{
+        $selectedDate = (new \DateTime())->format('Y-m-d');
+        }
 
         $sessionsFilter = $entityManager->getRepository(Session::class)
             ->findSessionsByFilters($cinemaId, $dateFilter);
