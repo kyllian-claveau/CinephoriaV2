@@ -4,7 +4,7 @@
         <a href="{{ path('app_index') }}" class="hover:text-yellow-500 transition-all">Accueil</a>
         <a href="{{ path('app_reservation') }}" class="hover:text-yellow-500 transition-all">Réservation</a>
         <a href="{{path('app_films')}}" class="hover:text-yellow-500 transition-all">Films</a>
-        <a href="#contact" class="hover:text-yellow-500 transition-all">Contact</a>
+        <a href="{{ path('app_contact') }}" class="hover:text-yellow-500 transition-all">Contact</a>
         {% if app.user is null %}
             <a href="{{ path('app_login') }}" class="hover:text-yellow-500 transition-all">Connexion</a>
         {% else %}
