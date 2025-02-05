@@ -94,49 +94,7 @@
         </section>
     </div>
 
-    <script>
-        document.getElementById('session_film').addEventListener('change', function () {
-            const filmId = this.value;
-            const cinemasContainer = document.getElementById('cinemas-container');
-
-            if (filmId) {
-                fetch(`/admin/api/films/${filmId}/cinemas`)
-                    .then(response => response.json())
-                    .then(data => {
-                        cinemasContainer.innerHTML = ''; // Vider la liste des cinémas
-
-                        if (data.length > 0) {
-                            cinemasContainer.style.display = 'block'; // Afficher les checkboxes
-
-                            data.forEach(cinema => {
-                                const div = document.createElement('div');
-                                div.classList.add('flex', 'items-center');
-
-                                const checkbox = document.createElement('input');
-                                checkbox.type = 'checkbox';
-                                checkbox.name = 'session[cinemas][]';
-                                checkbox.value = cinema.id;
-                                checkbox.id = `cinema-${cinema.id}`;
-
-                                const label = document.createElement('label');
-                                label.setAttribute('for', `cinema-${cinema.id}`);
-                                label.textContent = cinema.name;
-                                label.classList.add('ml-2');
-
-                                div.appendChild(checkbox);
-                                div.appendChild(label);
-
-                                cinemasContainer.appendChild(div);
-                            });
-                        } else {
-                            cinemasContainer.style.display = 'none'; // Aucun cinéma associé
-                        }
-                    })
-                    .catch(error => console.error('Erreur:', error));
-            } else {
-                cinemasContainer.style.display = 'none'; // Cacher les cinémas si aucun film sélectionné
-            }
-        });
-
-    </script>
+    {% block javascripts %}
+    {{ encore_entry_script_tags('session') }}
+        {% endblock javascripts %}
 {% endblock %}
