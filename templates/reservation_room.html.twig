@@ -4,7 +4,6 @@
 
 {% block content %}
     <div class="flex min-h-screen">
-        <!-- Sidebar à gauche -->
         <div class="w-1/4 bg-gray-900 text-white p-4 flex flex-col">
             <div class="mb-4">
                 <img src="{{ asset('/images/film/' ~ session.film.filmFilename) }}" alt="{{ session.film.title }}"
@@ -18,12 +17,18 @@
             <p class="text-sm text-gray-300 mb-4">Fin (à titre prévisionnel): <span
                         class="font-medium text-white">{{ session.endDate|date('H:i') }}</span></p>
         </div>
-
-        <!-- Contenu à droite (Plan de salle) -->
         <div class="flex-1 bg-gray-700 flex flex-col min-h-screen">
             <header class="bg-gray-900 text-white p-4 shadow-lg flex justify-between items-center">
                 <div class="flex space-x-4">
                     <p class="text-base font-bold">Salle {{ session.room.number }} ({{ session.room.quality }})</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="javascript:history.back();">
+                        <p class="text-base font-bold"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                        </p>
+                    </a>
                 </div>
             </header>
 
@@ -101,10 +106,9 @@
                                 Confirmer la réservation
                             </button>
                             {% else %}
-                            <button id="loginButton"
-                                    class="bg-yellow-500 hover:bg-yellow-400 text-black py-2 px-4 rounded-full text-lg font-semibold transition-all mt-4">
+                            <a href="{{ path("app_login") }}"><button class="bg-yellow-500 hover:bg-yellow-400 text-black py-2 px-4 rounded-full text-lg font-semibold transition-all mt-4">
                                 Connectez-vous pour pouvoir valider votre réservation
-                            </button>
+                            </button></a>
                             {% endif %}
                         </div>
                     </div>
@@ -161,51 +165,52 @@
                 totalPriceDisplay.textContent = totalPrice.toFixed(2); // Affichage du prix avec deux décimales
             });
         });
+        if (confirmReservationBtn) {
+            confirmReservationBtn.addEventListener('click', () => {
+                if (selectedSeats.length === 0) {
+                    alert('Veuillez sélectionner des sièges.');
+                    return;
+                }
 
-        confirmReservationBtn.addEventListener('click', () => {
-            if (selectedSeats.length === 0) {
-                alert('Veuillez sélectionner des sièges.');
-                return;
-            }
-
-            fetch('/reservation/confirm', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token("reservation_confirm") }}'
-                },
-                body: JSON.stringify({
-                    sessionId: {{ session.id }},
-                    seats: selectedSeats
+                fetch('/reservation/confirm', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token("reservation_confirm") }}'
+                    },
+                    body: JSON.stringify({
+                        sessionId: {{ session.id }},
+                        seats: selectedSeats
+                    })
                 })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        alert(data.error);
-                    } else {
-                        alert(data.message);
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            alert(data.error);
+                        } else {
+                            alert(data.message);
 
-                        selectedSeats.forEach(seat => {
-                            const seatButton = document.querySelector(`[data-seat="${seat}"]`);
-                            if (seatButton) {
-                                seatButton.setAttribute('data-available', 'false');
-                                seatButton.disabled = true;
-                                seatButton.classList.add('seat-reserved');
-                                seatButton.classList.remove('select-seat-selected');
-                            }
-                        });
+                            selectedSeats.forEach(seat => {
+                                const seatButton = document.querySelector(`[data-seat="${seat}"]`);
+                                if (seatButton) {
+                                    seatButton.setAttribute('data-available', 'false');
+                                    seatButton.disabled = true;
+                                    seatButton.classList.add('seat-reserved');
+                                    seatButton.classList.remove('select-seat-selected');
+                                }
+                            });
 
-                        selectedSeats = [];
-                        selectedSeatsDisplay.textContent = '';
-                        totalPriceDisplay.textContent = '0.00';
-                    }
-                })
-                .catch(error => {
-                    console.error('Erreur:', error);
-                    alert('Une erreur est survenue lors de la réservation.');
-                });
-        });
+                            selectedSeats = [];
+                            selectedSeatsDisplay.textContent = '';
+                            totalPriceDisplay.textContent = '0.00';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur:', error);
+                        alert('Une erreur est survenue lors de la réservation.');
+                    });
+            });
+        }
 
     </script>
     <style>

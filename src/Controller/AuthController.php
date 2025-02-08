@@ -19,10 +19,12 @@ use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Http\Util\TargetPathTrait;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class AuthController extends AbstractController
 {
+    use TargetPathTrait;
     private $mailer;
     private $userRepository;
     private $passwordHasher;
@@ -43,10 +45,23 @@ class AuthController extends AbstractController
     }
 
     #[Route(path:'/login', name: 'app_login')]
-    public function login(){
+    public function login(Request $request){
         if ($this->security->getUser()) {
+            $targetPath = $this->getTargetPath($request->getSession(), 'main');
+            if ($targetPath) {
+                // Effacer le chemin cible de la session et rediriger
+                $this->removeTargetPath($request->getSession(), 'main');
+                return $this->redirect($targetPath);
+            }
             return $this->redirectToRoute('app_index');
         }
+
+        // Sauvegarder l'URL de provenance dans la session
+        $referer = $request->headers->get('referer');
+        if ($referer && !str_contains($referer, 'login') && !str_contains($referer, 'register')) {
+            $this->saveTargetPath($request->getSession(), 'main', $referer);
+        }
+
         $loginForm = $this->createForm(LoginType::class);
         return $this->render('auth/login.html.twig', [
             'loginForm' => $loginForm->createView()

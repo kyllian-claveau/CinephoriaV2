@@ -18,8 +18,6 @@
                 <div class="image">
                     <p class="admit-one">
                         <span>{{ reservation.session.film.title }}</span>
-                        <span>{{ reservation.session.film.title }}</span>
-                        <span>{{ reservation.session.film.title }}</span>
                     </p>
                     <div class="ticket-number">
                         <p>
@@ -29,43 +27,30 @@
                 </div>
                 <div class="ticket-info">
                     <p class="date">
-                        <span>Jeudi</span>
-                        <span class="june-29">JUNE 29TH</span>
-                        <span>2021</span>
+                        <span>{{ reservation.session.startDate|date('l')|lower|trans({}, 'calendar', 'fr') }}</span>
+                        <span class="month-day">{{ reservation.session.startDate|date('j') }} {{ reservation.session.startDate|date('F')|lower|trans({}, 'calendar', 'fr') }}</span>
+                        <span>{{ reservation.session.startDate|date('Y') }}</span>
                     </p>
                     <div class="show-name">
                         <h1>{{ reservation.session.film.title }}</h1>
-                        <h2>Olivia Rodrigo</h2>
+                        <h2>{{ reservation.session.cinema.name }}</h2>
                     </div>
                     <div class="time">
-                        <p>8:00 PM <span>TO</span> 11:00 PM</p>
-                        <p>DOORS <span>@</span> 7:00 PM</p>
+                        <p>{{ reservation.session.startDate|date('H:i') }} <span>à</span> {{ reservation.session.endDate|date('H:i') }}</p>
                     </div>
-                    <p class="location"><span>East High School</span>
-                        <span class="separator"><i class="far fa-smile"></i></span><span>Salt Lake City, Utah</span>
+                    <p class="location"><span>{{ reservation.session.cinema.name }}</span>
+                        <span class="separator"><i class="far fa-smile"></i></span><span>{{ reservation.session.cinema.location }}</span>
                     </p>
                 </div>
             </div>
             <div class="right">
                 <p class="admit-one">
-                    <span>ADMIT ONE</span>
-                    <span>ADMIT ONE</span>
-                    <span>ADMIT ONE</span>
+                    <span>{{ reservation.session.film.title }}</span>
                 </p>
                 <div class="right-info-container">
-                    <div class="show-name">
-                        <h1>SOUR Prom</h1>
-                    </div>
-                    <div class="time">
-                        <p>8:00 PM <span>TO</span> 11:00 PM</p>
-                        <p>DOORS <span>@</span> 7:00 PM</p>
-                    </div>
                     <div class="barcode">
-                        <img src="https://external-preview.redd.it/cg8k976AV52mDvDb5jDVJABPrSZ3tpi1aXhPjgcDTbw.png?auto=webp&s=1c205ba303c1fa0370b813ea83b9e1bddb7215eb" alt="QR code">
+                        <img src="{{ reservation.qrCodeUrl }}" alt="QR code">
                     </div>
-                    <p class="ticket-number">
-                        #20030220
-                    </p>
                 </div>
             </div>
         </div>
@@ -103,7 +88,6 @@
         }
 
         .image {
-            height: 250px;
             width: 250px;
             background-image: url("{{ asset("/images/film/"~ reservation.session.film.filmFilename) }}");
             background-size: contain;
@@ -168,7 +152,7 @@
             text-align: right;
         }
 
-        .date .june-29 {
+        .date .month-day {
             color: #d83565;
             font-size: 20px;
         }
