@@ -27,7 +27,6 @@ class reservationController extends AbstractController
     #[Route("/reservation", name: "app_reservation")]
     public function index(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $user = $this->getUser();
         $cinemaId = $request->query->get('cinema');
         $numberOfPeople = $request->query->get('number_of_people', 1);
         $selectedDate = $request->query->get('date');
