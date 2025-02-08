@@ -95,7 +95,7 @@
                             <p class="text-white">Sièges sélectionnés : <span id="selected-seats"
                                                                               class="font-semibold"></span></p>
                             <p class="text-white">Prix total : <span id="total-price" class="font-semibold">{{ session.price }}</span> €</p>
-                            {% if user.roles is not null %}
+                            {% if app.user is not null %}
                             <button id="confirm-reservation-btn"
                                     class="bg-yellow-500 hover:bg-yellow-400 text-black py-2 px-4 rounded-full text-lg font-semibold transition-all mt-4">
                                 Confirmer la réservation
