@@ -36,12 +36,8 @@ class ContactController extends AbstractController
             try {
                 $mailer->send($email);
                 $this->addFlash('success', 'Votre demande a été envoyée avec succès !');
-                return $this->redirectToRoute('app_contact');
             } catch (TransportExceptionInterface $e) {
                 $this->addFlash('error', 'Erreur lors de l\'envoi du message : ' . $e->getMessage());
-                return $this->render('contact.html.twig', [
-                    'form' => $form->createView(),
-                ]);
             }
         }
 
