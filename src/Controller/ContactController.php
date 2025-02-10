@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Form\ContactType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,15 +28,21 @@ class ContactController extends AbstractController
                 ->subject('Demande de contact - ' . $data['title'])
                 ->html(
                     $this->renderView('emails/contact.html.twig', [
-                        'username' => $data['username'] ?? 'Anonyme',
+                        'username' => $data['username'] ?? 'NoUser',
                         'title' => $data['title'],
                         'description' => $data['description']
                     ])
                 );
-
-            $mailer->send($email);
-            $this->addFlash('success', 'Votre demande a été envoyée avec succès !');
-            return $this->redirectToRoute('app_contact');
+            try {
+                $mailer->send($email);
+                $this->addFlash('success', 'Votre demande a été envoyée avec succès !');
+                return $this->redirectToRoute('app_contact');
+            } catch (TransportExceptionInterface $e) {
+                $this->addFlash('error', 'Erreur lors de l\'envoi du message : ' . $e->getMessage());
+                return $this->render('contact.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+            }
         }
 
         return $this->render('contact.html.twig', [
