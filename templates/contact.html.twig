@@ -5,6 +5,13 @@
 {% block content %}
     <section id="contact" class="pt-20 py-6 bg-gray-800">
         <div class="max-w-7xl mx-auto">
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type }} bg-{{ type == 'success' ? 'green' : 'red' }}-500 text-white p-4 rounded mb-4 text-center">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
             <h2 class="text-3xl font-extrabold text-yellow-500 text-center">Nous contacter</h2>
             <p class="mt-4 text-lg text-white text-center">Si vous avez un problème ou une question, n'hésitez pas à nous envoyer un message.</p>
 
