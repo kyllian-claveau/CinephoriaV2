@@ -154,7 +154,7 @@ class AuthController extends AbstractController
                 );
 
                 $email = (new Email())
-                    ->from('no-reply@votresite.com')
+                    ->from('contact@cinephoria.ovh')
                     ->to($user->getEmail())
                     ->subject('Confirmez votre inscription')
                     ->html($this->renderView('emails/confirmation.html.twig', [
@@ -181,8 +181,6 @@ class AuthController extends AbstractController
         ]);
     }
 
-
-
     #[Route(path: '/reset-password', name: 'app_reset_password', methods: ['POST'])]
     public function resetPassword(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
@@ -208,7 +206,7 @@ class AuthController extends AbstractController
         $entityManager->flush();
 
         $emailMessage = (new Email())
-            ->from('noreply@votresite.com')
+            ->from('contact@cinephoria.ovh')
             ->to($user->getEmail())
             ->subject('Réinitialisation de votre mot de passe')
             ->html("<p>Voici votre mot de passe temporaire : <strong>$temporaryPassword</strong></p>");
