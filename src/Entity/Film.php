@@ -43,7 +43,7 @@ class Film
     #[ORM\ManyToMany(targetEntity: Genre::class, inversedBy: 'films')]
     private $genres;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(length: 1024)]
     private ?string $description = null;
 
     #[ORM\Column(type: 'integer')]
