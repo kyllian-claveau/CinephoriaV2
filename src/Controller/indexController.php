@@ -20,14 +20,20 @@ class indexController extends AbstractController
         if ($user && $user->getIsTemporaryPassword()) {
             return $this->redirectToRoute('app_change_password');
         }
+        $films =$entityManager->getRepository(Film::class)->findAll();
         $filmsFromLastWednesday =$entityManager->getRepository(Film::class)->findFilmsFromLastWednesday();
         $filmsWithRatings = [];
-        foreach ($filmsFromLastWednesday as $film) {
+        foreach ($films as $film) {
             $averageRating = $entityManager->getRepository(Review::class)->getAverageRatingForFilm($film->getId());
             $film->averageRating = $averageRating;
         }
+        foreach ($filmsFromLastWednesday as $lastFilm) {
+            $averageRating = $entityManager->getRepository(Review::class)->getAverageRatingForFilm($lastFilm->getId());
+            $lastFilm->averageRating = $averageRating;
+        }
         return $this->render('index.html.twig', [
-            'films' => $filmsFromLastWednesday,
+            'lastFilms' => $filmsFromLastWednesday,
+            'films' => $films,
             'filmsWithRatings' => $filmsWithRatings,
         ]);
     }

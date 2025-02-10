@@ -14,32 +14,64 @@
         </div>
     </section>
 
-    <!-- Films Section -->
+    <!-- Last Films Section -->
     <section id="films" class="py-20 bg-black">
         <div class="max-w-7xl mx-auto text-center">
-            <h2 class="text-4xl font-extrabold text-yellow-500">Films à l'affiche</h2>
+            <h2 class="text-4xl font-extrabold text-yellow-500">Films sortis cette semaine</h2>
             <p class="text-lg mt-4 text-white">Découvrez les dernières sorties et les films incontournables du moment.</p>
             <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                 <!-- Film Card -->
-                {% for film in films %}
+                {% for lastFilm in lastFilms %}
                 <div class="relative bg-gray-800 rounded-lg overflow-hidden shadow-lg group transition-all duration-300 transform hover:shadow-2xl">
-                    <img src="{{ asset("/images/film/"~ film.filmFilename) }}" alt="{{ film.title }}" class="w-full h-72 transition-opacity group-hover:opacity-90">
+                    <img src="{{ asset("/images/film/"~ lastFilm.filmFilename) }}" alt="{{ lastFilm.title }}" class="w-full h-72 transition-opacity group-hover:opacity-90">
                     <div class="p-4 text-center">
                         <h3 class="text-xl font-semibold text-yellow-500 transition-colors group-hover:text-yellow-400">
-                            {{ film.title }}</h3>
-                        <p class="text-gray-400 text-sm mt-2">Genre: {{ film.getGenresAsString() }}</p>
-                        <p class="text-gray-400 text-sm mt-1">Durée: {{ film.duration }} minutes</p>
+                            {{ lastFilm.title }}</h3>
+                        <p class="text-gray-400 text-sm mt-2">Genre: {{ lastFilm.getGenresAsString() }}</p>
+                        <p class="text-gray-400 text-sm mt-1">Durée: {{ lastFilm.duration }} minutes</p>
                     </div>
                     <!-- Hidden Section for Hover -->
                     <div class="p-2 opacity-0 h-0 group-hover:opacity-100 group-hover:h-20 transition-all duration-300">
-                        {% if film.averageRating is not null %}
-                            <p class="text-yellow-500 mt-2">Note moyenne: {{ film.averageRating }} / 5</p>
+                        {% if lastFilm.averageRating is not null %}
+                            <p class="text-yellow-500 mt-2">Note moyenne: {{ lastFilm.averageRating }} / 5</p>
                         {% else %}
                             <p class="text-gray-400 mt-2">Aucune note pour ce film</p>
                         {% endif %}
                        </div>
                 </div>
                     {% else %}
+                    <p>Aucune nouvelle sortie cette semaine !</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Films Section -->
+    <section id="films" class="py-20 bg-black">
+        <div class="max-w-7xl mx-auto text-center">
+            <h2 class="text-4xl font-extrabold text-yellow-500">Films à l'affiche</h2>
+            <p class="text-lg mt-4 text-white">Découvrez les films de votre cinéma.</p>
+            <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <!-- Film Card -->
+                {% for film in films %}
+                    <div class="relative bg-gray-800 rounded-lg overflow-hidden shadow-lg group transition-all duration-300 transform hover:shadow-2xl">
+                        <img src="{{ asset("/images/film/"~ film.filmFilename) }}" alt="{{ film.title }}" class="w-full h-72 transition-opacity group-hover:opacity-90">
+                        <div class="p-4 text-center">
+                            <h3 class="text-xl font-semibold text-yellow-500 transition-colors group-hover:text-yellow-400">
+                                {{ film.title }}</h3>
+                            <p class="text-gray-400 text-sm mt-2">Genre: {{ film.getGenresAsString() }}</p>
+                            <p class="text-gray-400 text-sm mt-1">Durée: {{ film.duration }} minutes</p>
+                        </div>
+                        <!-- Hidden Section for Hover -->
+                        <div class="p-2 opacity-0 h-0 group-hover:opacity-100 group-hover:h-20 transition-all duration-300">
+                            {% if film.averageRating is not null %}
+                                <p class="text-yellow-500 mt-2">Note moyenne: {{ film.averageRating }} / 5</p>
+                            {% else %}
+                                <p class="text-gray-400 mt-2">Aucune note pour ce film</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
                     <p>Aucun film à l'affiche !</p>
                 {% endfor %}
             </div>
